@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Game Website</title>
+        <link rel="stylesheet" href="style/index.css">
+        <script src="assets/dialogs.js" defer></script>
+        <script src="assets/arcades.js" defer></script>
+        <script src="scripts/index.js" defer></script>
+    </head>
+    <body>
+    <div id="field">
+        <div id="player"></div>
+        <div id="npc1" class="interactable npc"></div>
+        <div id="npc2" class="interactable npc"></div>
+        <div id="arcade1" class="interactable arcade"></div>
+        <div id="arcade2" class="interactable arcade"></div>
+    </div>
+    <div id="dialog" class="hidden">
+        <div class="dialog-content">
+            <img id="npc-image" src="" alt="NPC">
+            <p id="dialog-text">This is a dialog.</p>
+            <img id="player-image" src="assets/playerDialog.png" alt="Player">
+        </div>
+    </div>
+    </body>
+</html>
