@@ -1,0 +1,29 @@
+body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+.counter-field {
+    display: flex;
+    gap: 12px;
+    text-align: center;
+    font-size: 24px;
+    justify-content: center;
+}
+.letters-field {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+}
+.right-field, .wrong-field {
+    text-align: center;
+}
+.right-field {
+
+}
+.wrong-field {
+
+}
+.message {
+    text-align: center;
+    font-size: 24px;
+}
