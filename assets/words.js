@@ -1,0 +1,15 @@
+let words = [
+    { french: "Bonjour", english: "Hello" },
+    { french: "Au revoir", english: "Goodbye" },
+    { french: "Merci", english: "Thank you" },
+    { french: "S'il vous plaît", english: "Please" },
+    { french: "Oui", english: "Yes" },
+    { french: "Non", english: "No" },
+    { french: "Comment allez-vous", english: "How are you" },
+    { french: "Bien", english: "Good" },
+    { french: "Chat", english: "Cat" },
+    { french: "Chien", english: "Dog" },
+    { french: "Cheval", english: "Horse" },
+    { french: "Vache", english: "Cow" },
+    { french: "Poulet", english: "Chicken" },
+];

@@ -1,0 +1,254 @@
+class MemoryGame {
+    constructor(rows = 4, cols = 5) {
+        this.gameBoard = document.getElementById('game-board');
+        this.pairsDisplay = document.getElementById('pairs');
+        this.attemptsDisplay = document.getElementById('attempts');
+        this.cards = [];
+        this.flippedCards = [];
+        this.matchedPairs = 0;
+        this.attempts = 0;
+        this.isLocked = false;
+        this.bestScore = this.getBestScore();
+        this.popup = null;
+        this.rows = rows;
+        this.cols = cols;
+
+        this.init();
+        this.updateBestScoreDisplay();
+    }
+
+    setBestScore(score) {
+        const cookieName = "rom100main.english-game";
+        const cookieValue = JSON.stringify({ memory: score });
+        const date = new Date();
+        date.setFullYear(date.getFullYear() + 1); // Cookie expires in 1 year
+        document.cookie = `${cookieName}=${cookieValue}; expires=${date.toUTCString()}; path=/`;
+        this.bestScore = score;
+    }
+
+    getBestScore() {
+        const cookieName = "rom100main.english-game";
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(cookieName+'='));
+        
+        if (cookieValue) {
+            try {
+                const data = JSON.parse(cookieValue.split('=')[1]);
+                return data.memory || Infinity;
+            } catch {
+                return Infinity;
+            }
+        }
+        return Infinity;
+    }
+
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById('best-score');
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestScore === Infinity ? '-' : this.bestScore;
+        }
+    }
+
+    resetGame() {
+        this.isLocked = true;
+        
+        // Flip all cards face down
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.classList.remove('flipped', 'matched');
+        });
+
+        // Wait for flip animation to complete
+        setTimeout(() => {
+            this.gameBoard.innerHTML = '';
+            this.cards = [];
+            this.flippedCards = [];
+            this.matchedPairs = 0;
+            this.attempts = 0;
+            this.isLocked = false;
+            this.pairsDisplay.textContent = '0';
+            this.attemptsDisplay.textContent = '0';
+            this.init();
+        }, 300); // Match card flip animation duration
+    }
+
+    showWinPopup() {
+        const isNewBestScore = this.attempts < this.bestScore;
+        if (isNewBestScore) {
+            this.setBestScore(this.attempts);
+            this.updateBestScoreDisplay();
+            window.confetti.start();
+        }
+
+        // Create new popup instance
+        this.popup = new Popup();
+
+        // Set popup content
+        const content = `
+            <h2>Congratulations!</h2>
+            <p>You completed the game in <span id="final-attempts">${this.attempts}</span> attempts!</p>
+            <p class="best-score-text" style="color: ${isNewBestScore ? '#27ae60' : '#666'}">
+                ${isNewBestScore ? '🎉 New Best Score! 🎉' : `Best Score: ${this.bestScore}`}
+            </p>
+            <button class="retry-button">Play Again</button>
+        `;
+
+        // Setup popup
+        this.popup
+            .setContent(content)
+            .onHide(() => {
+                // Fade out confetti
+                const canvas = window.confetti.canvas;
+                if (canvas) {
+                    canvas.style.transition = 'opacity 0.3s ease-out';
+                    canvas.style.opacity = '0';
+                    setTimeout(() => {
+                        window.confetti.stop();
+                        canvas.style.opacity = '1';
+                        canvas.style.transition = '';
+                    }, 300);
+                }
+
+                // Reset game after transition
+                setTimeout(() => {
+                    this.resetGame();
+                    this.popup.destroy();
+                    this.popup = null;
+                }, 300);
+            });
+
+        // Setup retry button
+        const retryButton = this.popup.popup.querySelector('.retry-button');
+        retryButton.addEventListener('click', () => {
+            this.popup.hide();
+        });
+
+        // Show popup
+        this.popup.show();
+    }
+
+    init() {
+        // Update grid layout
+        this.gameBoard.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
+
+        // Calculate number of pairs needed
+        const totalCells = this.rows * this.cols;
+        const numPairs = Math.floor(totalCells / 2);
+
+        // Take only the required number of word pairs
+        const selectedWords = words.slice(0, numPairs);
+        const cardPairs = selectedWords.map(word => [
+            { text: word.french, type: 'french' },
+            { text: word.english, type: 'english' }
+        ]).flat();
+
+        // Shuffle the cards
+        this.cards = this.shuffle(cardPairs);
+        
+        // Create and add cards to the board
+        this.cards.forEach((card, index) => {
+            const cardElement = this.createCard(card, index);
+            this.gameBoard.appendChild(cardElement);
+        });
+    }
+
+    createCard(card, index) {
+        const cardElement = document.createElement('div');
+        cardElement.className = 'card';
+        cardElement.dataset.index = index;
+
+        const front = document.createElement('div');
+        front.className = 'card-front';
+        front.textContent = '?';
+
+        const back = document.createElement('div');
+        back.className = 'card-back';
+        back.textContent = card.text;
+
+        cardElement.appendChild(front);
+        cardElement.appendChild(back);
+
+        cardElement.addEventListener('click', () => this.flipCard(cardElement, card));
+        return cardElement;
+    }
+
+    flipCard(cardElement, card) {
+        if (
+            this.isLocked || 
+            this.flippedCards.length >= 2 || 
+            cardElement.classList.contains('flipped') ||
+            cardElement.classList.contains('matched')
+        ) {
+            return;
+        }
+
+        cardElement.classList.add('flipped');
+        this.flippedCards.push({ element: cardElement, card });
+
+        if (this.flippedCards.length === 2) {
+            this.attempts++;
+            this.attemptsDisplay.textContent = this.attempts;
+            this.checkMatch();
+        }
+    }
+
+    checkMatch() {
+        const [first, second] = this.flippedCards;
+        const isMatch = 
+            first.card.type !== second.card.type && 
+            ((first.card.type === 'french' && this.findMatchingPair(first.card.text, 'french') === second.card.text) ||
+             (first.card.type === 'english' && this.findMatchingPair(first.card.text, 'english') === second.card.text));
+
+        if (isMatch) {
+            this.handleMatch();
+        } else {
+            this.handleMismatch();
+        }
+    }
+
+    findMatchingPair(text, type) {
+        const word = words.find(w => 
+            type === 'french' ? w.french === text : w.english === text
+        );
+        return type === 'french' ? word.english : word.french;
+    }
+
+    handleMatch() {
+        this.flippedCards.forEach(({ element }) => {
+            element.classList.add('matched');
+        });
+        this.matchedPairs++;
+        this.pairsDisplay.textContent = this.matchedPairs;
+        this.flippedCards = [];
+
+        if (this.matchedPairs === Math.floor(this.rows * this.cols / 2)) {
+            setTimeout(() => {
+                this.showWinPopup();
+            }, 500);
+        }
+    }
+
+    handleMismatch() {
+        this.isLocked = true;
+        setTimeout(() => {
+            this.flippedCards.forEach(({ element }) => {
+                element.classList.remove('flipped');
+            });
+            this.flippedCards = [];
+            this.isLocked = false;
+        }, 1000);
+    }
+
+    shuffle(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+}
+
+// Create a 4x4 game board
+new MemoryGame(4, 4);
