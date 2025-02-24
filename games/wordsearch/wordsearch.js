@@ -7,24 +7,23 @@ class WordSearch {
         this.placedWords = [];
         this.selectedCells = [];
         this.foundWords = new Set();
-        this.startTime = null;
-        this.timerInterval = null;
         this.bestTime = BestScore.getBestScore('wordsearch');
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
-        this.timerDisplay = document.getElementById("timer");
+        
+        this.timer = new Timer();
         
         this.init();
         this.updateBestScoreDisplay();
-        this.startTimer();
+        this.timer.start();
     }
 
 
     updateBestScoreDisplay() {
         const bestScoreElement = document.getElementById("best-score");
         if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestTime === Infinity ? "-" : this.formatTime(this.bestTime);
+            bestScoreElement.textContent = this.bestTime === Infinity ? "-" : this.timer.formatTime(this.bestTime);
         }
     }
 
@@ -260,24 +259,8 @@ class WordSearch {
         return false;
     }
 
-    startTimer() {
-        this.startTime = Date.now();
-        this.timerInterval = setInterval(() => {
-            const elapsed = Date.now() - this.startTime;
-            this.timerDisplay.textContent = this.formatTime(elapsed);
-        }, 1000);
-    }
-
-    formatTime(ms) {
-        const seconds = Math.floor(ms / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
-    }
-
     handleWin() {
-        clearInterval(this.timerInterval);
-        const finalTime = Date.now() - this.startTime;
+        const finalTime = this.timer.stop();
         const isNewBestTime = finalTime < this.bestTime;
         
         if (isNewBestTime) {
