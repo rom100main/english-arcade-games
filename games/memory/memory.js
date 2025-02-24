@@ -8,7 +8,7 @@ class MemoryGame {
         this.matchedPairs = 0;
         this.attempts = 0;
         this.isLocked = false;
-        this.bestScore = this.getBestScore();
+        this.bestScore = BestScore.getBestScore('memory');
         this.popup = null;
         this.rows = rows;
         this.cols = cols;
@@ -17,44 +17,6 @@ class MemoryGame {
         this.updateBestScoreDisplay();
     }
 
-    setBestScore(score) {
-        const cookieName = "rom100main.english-game";
-        const cookieValue = document.cookie
-            .split('; ')
-            .find(row => row.startsWith(cookieName+'='));
-        
-        let data = {};
-        if (cookieValue) {
-            try {
-                data = JSON.parse(cookieValue.split('=')[1]);
-            } catch {
-                data = {};
-            }
-        }
-        
-        data.memory = score;
-        const date = new Date();
-        date.setFullYear(date.getFullYear() + 1);
-        document.cookie = `${cookieName}=${JSON.stringify(data)};`;
-        this.bestScore = score;
-    }
-
-    getBestScore() {
-        const cookieName = "rom100main.english-game";
-        const cookieValue = document.cookie
-            .split('; ')
-            .find(row => row.startsWith(cookieName+'='));
-        
-        if (cookieValue) {
-            try {
-                const data = JSON.parse(cookieValue.split('=')[1]);
-                return data.memory || Infinity;
-            } catch {
-                return Infinity;
-            }
-        }
-        return Infinity;
-    }
 
     updateBestScoreDisplay() {
         const bestScoreElement = document.getElementById('best-score');
@@ -89,7 +51,8 @@ class MemoryGame {
     showWinPopup() {
         const isNewBestScore = this.attempts < this.bestScore;
         if (isNewBestScore) {
-            this.setBestScore(this.attempts);
+            BestScore.setBestScore('memory', this.attempts);
+            this.bestScore = this.attempts;
             this.updateBestScoreDisplay();
             window.confetti.start();
         }
