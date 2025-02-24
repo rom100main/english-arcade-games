@@ -20,7 +20,7 @@ class hangman {
         this.lost_popup = new Popup();
 
         let won_content = "<div>"
-        + "<p>Congratulation! You won found the word.</p>"
+        + "<p>Congratulation! You found the correct word.</p>"
         + "<button class=\"retry-button\">Play again</button>"
         + "</div>"
 
@@ -89,23 +89,32 @@ class hangman {
             text.innerHTML = this.default_char;
             this.word_field.append(text); 
         }
+        this.revealRandomLetter(this.word.length / 3);
+    }
+
+    revealRandomLetter(n) {
+        for (let i = 0; i < n; i++) {
+            var index = random(0, this.word.length - 1);
+            this.word_field.children[index].textContent = this.word[index];
+        }
     }
 
     guess() {
         var letter = guess_field.value;
+        var found = false;
         for (let i = 0; i < this.word.length; i++) {
             if (this.word[i].toLowerCase() == letter.toLowerCase()) {
                 this.word_field.children[i].textContent = letter;
+                found = true;
             }
         }
         this.guess_field.value = "";
-        this.left--;
+        if (!found) this.left--;
         this.refreshCount();
         if (this.isComplete()) {
             this.showWonpopup();
         }
         else if (this.left == 0) {
-            console.log("Lost");
             this.showLostpopup();
         }
     }
