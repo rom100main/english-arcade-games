@@ -5,7 +5,7 @@ class Anagrams {
         this.foundWords = new Set();
         this.startTime = null;
         this.timerInterval = null;
-        this.bestTime = this.getBestScore();
+        this.bestTime = BestScore.getBestScore('anagrams');
         this.currentScrambled = null;
 
         this.gameBoard = document.getElementById("game-board");
@@ -15,45 +15,6 @@ class Anagrams {
         this.init();
         this.updateBestScoreDisplay();
         this.startTimer();
-    }
-
-    setBestScore(score) {
-        const cookieName = "rom100main.english-game";
-        const cookieValue = document.cookie
-            .split("; ")
-            .find(row => row.startsWith(cookieName+"="));
-        
-        let data = {};
-        if (cookieValue) {
-            try {
-                data = JSON.parse(cookieValue.split("=")[1]);
-            } catch {
-                data = {};
-            }
-        }
-        
-        data.anagrams = score;
-        const date = new Date();
-        date.setFullYear(date.getFullYear() + 1);
-        document.cookie = `${cookieName}=${JSON.stringify(data)};`;
-        this.bestTime = score;
-    }
-
-    getBestScore() {
-        const cookieName = "rom100main.english-game";
-        const cookieValue = document.cookie
-            .split("; ")
-            .find(row => row.startsWith(cookieName+"="));
-        
-        if (cookieValue) {
-            try {
-                const data = JSON.parse(cookieValue.split("=")[1]);
-                return data.anagrams || Infinity;
-            } catch {
-                return Infinity;
-            }
-        }
-        return Infinity;
     }
 
     updateBestScoreDisplay() {
@@ -256,7 +217,8 @@ class Anagrams {
         const isNewBestTime = finalTime < this.bestTime;
         
         if (isNewBestTime) {
-            this.setBestScore(finalTime);
+            BestScore.setBestScore('anagrams', finalTime);
+            this.bestTime = finalTime;
             this.updateBestScoreDisplay();
             window.confetti.start();
         }

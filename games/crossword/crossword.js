@@ -8,7 +8,7 @@ class Crossword {
         this.foundWords = new Set();
         this.startTime = null;
         this.timerInterval = null;
-        this.bestTime = this.getBestScore();
+        this.bestTime = BestScore.getBestScore('crossword');
         this.direction = null; // 'horizontal' or 'vertical'
         this.lastInput = null; // Track last input cell coordinates
 
@@ -21,44 +21,6 @@ class Crossword {
         this.startTimer();
     }
 
-    setBestScore(score) {
-        const cookieName = "rom100main.english-game";
-        const cookieValue = document.cookie
-            .split("; ")
-            .find(row => row.startsWith(cookieName+"="));
-        
-        let data = {};
-        if (cookieValue) {
-            try {
-                data = JSON.parse(cookieValue.split("=")[1]);
-            } catch {
-                data = {};
-            }
-        }
-        
-        data.crossword = score;
-        const date = new Date();
-        date.setFullYear(date.getFullYear() + 1);
-        document.cookie = `${cookieName}=${JSON.stringify(data)};`;
-        this.bestTime = score;
-    }
-
-    getBestScore() {
-        const cookieName = "rom100main.english-game";
-        const cookieValue = document.cookie
-            .split("; ")
-            .find(row => row.startsWith(cookieName+"="));
-        
-        if (cookieValue) {
-            try {
-                const data = JSON.parse(cookieValue.split("=")[1]);
-                return data.crossword || Infinity;
-            } catch {
-                return Infinity;
-            }
-        }
-        return Infinity;
-    }
 
     updateBestScoreDisplay() {
         const bestScoreElement = document.getElementById("best-score");
@@ -553,7 +515,8 @@ class Crossword {
         const isNewBestTime = finalTime < this.bestTime;
         
         if (isNewBestTime) {
-            this.setBestScore(finalTime);
+            BestScore.setBestScore('crossword', finalTime);
+            this.bestTime = finalTime;
             this.updateBestScoreDisplay();
             window.confetti.start();
         }
