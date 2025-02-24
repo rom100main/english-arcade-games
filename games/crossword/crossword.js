@@ -1,0 +1,456 @@
+class Crossword {
+    constructor(size = 15, nbWords = 8) {
+        this.size = size;
+        this.nbWords = Math.min(nbWords, words.length);
+        this.board = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
+        this.words = [];
+        this.placedWords = [];
+        this.foundWords = new Set();
+        this.startTime = null;
+        this.timerInterval = null;
+        this.bestTime = this.getBestScore();
+
+        this.gameBoard = document.getElementById("game-board");
+        this.wordList = document.getElementById("word-list");
+        this.timerDisplay = document.getElementById("timer");
+        
+        this.init();
+        this.updateBestScoreDisplay();
+        this.startTimer();
+    }
+
+    setBestScore(score) {
+        const cookieName = "rom100main.english-game";
+        const cookieValue = JSON.stringify({ crossword: score });
+        const date = new Date();
+        date.setFullYear(date.getFullYear() + 1);
+        document.cookie = `${cookieName}=${cookieValue}; expires=${date.toUTCString()}; path=/`;
+        this.bestTime = score;
+    }
+
+    getBestScore() {
+        const cookieName = "rom100main.english-game";
+        const cookieValue = document.cookie
+            .split("; ")
+            .find(row => row.startsWith(cookieName+"="));
+        
+        if (cookieValue) {
+            try {
+                const data = JSON.parse(cookieValue.split("=")[1]);
+                return data.crossword || Infinity;
+            } catch {
+                return Infinity;
+            }
+        }
+        return Infinity;
+    }
+
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById("best-score");
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestTime === Infinity ? "-" : this.formatTime(this.bestTime);
+        }
+    }
+
+    init() {
+        // Select random words
+        this.words = this.getRandomWords(this.nbWords);
+        
+        // Sort words by length (descending) for better placement
+        this.words.sort((a, b) => b.english.length - a.english.length);
+        
+        // Place words on board
+        this.placeWords();
+        
+        // Create the game board UI
+        this.createBoard();
+        
+        // Create word list UI with hints
+        this.createWordList();
+    }
+
+    getRandomWords(count) {
+        const shuffled = [...words].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+    }
+
+    placeWords() {
+        let wordNumber = 1;
+        
+        // Try to place first word horizontally in the middle
+        const firstWord = this.words[0].english.toUpperCase();
+        const startY = Math.floor(this.size / 2);
+        const startX = Math.floor((this.size - firstWord.length) / 2);
+        
+        for (let i = 0; i < firstWord.length; i++) {
+            this.board[startY][startX + i] = {
+                letter: firstWord[i],
+                isStart: i === 0,
+                number: i === 0 ? wordNumber++ : null,
+                word: firstWord
+            };
+        }
+        
+        this.placedWords.push({
+            word: firstWord,
+            direction: 'horizontal',
+            x: startX,
+            y: startY
+        });
+
+        // Try to place remaining words
+        for (let i = 1; i < this.words.length; i++) {
+            const word = this.words[i].english.toUpperCase();
+            let placed = false;
+
+            // Try to find intersections with placed words
+            for (let y = 0; y < this.size && !placed; y++) {
+                for (let x = 0; x < this.size && !placed; x++) {
+                    if (this.board[y][x] && this.board[y][x].letter) {
+                        const letter = this.board[y][x].letter;
+                        const letterIndex = word.indexOf(letter);
+                        
+                        if (letterIndex !== -1) {
+                            // Try vertical placement
+                            if (!this.placedWords.some(w => w.word === word)) {
+                                const startY = y - letterIndex;
+                                if (this.canPlaceWordVertically(word, x, startY)) {
+                                    this.placeWordVertically(word, x, startY, wordNumber++);
+                                    placed = true;
+                                }
+                            }
+                            
+                            // Try horizontal placement
+                            if (!placed && !this.placedWords.some(w => w.word === word)) {
+                                const startX = x - letterIndex;
+                                if (this.canPlaceWordHorizontally(word, startX, y)) {
+                                    this.placeWordHorizontally(word, startX, y, wordNumber++);
+                                    placed = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    canPlaceWordHorizontally(word, startX, y) {
+        if (startX < 0 || startX + word.length > this.size) return false;
+
+        let hasIntersection = false;
+        
+        // Check if space is available and look for intersections
+        for (let i = 0; i < word.length; i++) {
+            const cell = this.board[y][startX + i];
+            if (cell && cell.letter) {
+                // If there's a letter, it must match
+                if (cell.letter !== word[i]) return false;
+                hasIntersection = true;
+                continue;
+            }
+
+            // If no intersection at this point, check for parallel words
+            if (!hasIntersection) {
+                // Check cells above and below for parallel words
+                if (y > 0 && this.board[y-1][startX + i]?.letter) return false;
+                if (y < this.size-1 && this.board[y+1][startX + i]?.letter) return false;
+            }
+        }
+
+        // Check left and right ends for touching words
+        if (startX > 0 && this.board[y][startX - 1]?.letter) return false;
+        if (startX + word.length < this.size && this.board[y][startX + word.length]?.letter) return false;
+
+        return true;
+    }
+
+    canPlaceWordVertically(word, x, startY) {
+        if (startY < 0 || startY + word.length > this.size) return false;
+
+        let hasIntersection = false;
+        
+        // Check if space is available and look for intersections
+        for (let i = 0; i < word.length; i++) {
+            const cell = this.board[startY + i]?.[x];
+            if (cell && cell.letter) {
+                // If there's a letter, it must match
+                if (cell.letter !== word[i]) return false;
+                hasIntersection = true;
+                continue;
+            }
+
+            // If no intersection at this point, check for parallel words
+            if (!hasIntersection) {
+                // Check cells left and right for parallel words
+                if (x > 0 && this.board[startY + i][x-1]?.letter) return false;
+                if (x < this.size-1 && this.board[startY + i][x+1]?.letter) return false;
+            }
+        }
+
+        // Check top and bottom ends for touching words
+        if (startY > 0 && this.board[startY - 1]?.[x]?.letter) return false;
+        if (startY + word.length < this.size && this.board[startY + word.length]?.[x]?.letter) return false;
+
+        return true;
+    }
+
+    placeWordHorizontally(word, startX, y, number) {
+        for (let i = 0; i < word.length; i++) {
+            const cell = this.board[y][startX + i] || {};
+            this.board[y][startX + i] = {
+                ...cell,
+                letter: word[i],
+                isStart: i === 0 && !cell.isStart,
+                number: i === 0 && !cell.number ? number : cell.number,
+                word: word
+            };
+        }
+        
+        this.placedWords.push({
+            word,
+            direction: 'horizontal',
+            x: startX,
+            y
+        });
+    }
+
+    placeWordVertically(word, x, startY, number) {
+        for (let i = 0; i < word.length; i++) {
+            const cell = this.board[startY + i]?.[x] || {};
+            this.board[startY + i][x] = {
+                ...cell,
+                letter: word[i],
+                isStart: i === 0 && !cell.isStart,
+                number: i === 0 && !cell.number ? number : cell.number,
+                word: word
+            };
+        }
+        
+        this.placedWords.push({
+            word,
+            direction: 'vertical',
+            x,
+            y: startY
+        });
+    }
+
+    createBoard() {
+        this.gameBoard.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
+        
+        for (let y = 0; y < this.size; y++) {
+            for (let x = 0; x < this.size; x++) {
+                const cell = document.createElement("div");
+                cell.className = "cell";
+                
+                if (this.board[y][x] && this.board[y][x].letter) {
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.maxLength = 1;
+                    input.dataset.x = x;
+                    input.dataset.y = y;
+                    input.dataset.correct = this.board[y][x].letter;
+                    cell.appendChild(input);
+                    
+                    if (this.board[y][x].number) {
+                        const number = document.createElement("span");
+                        number.className = "number";
+                        number.textContent = this.board[y][x].number;
+                        cell.appendChild(number);
+                    }
+                } else {
+                    cell.classList.add("empty");
+                }
+                
+                this.gameBoard.appendChild(cell);
+            }
+        }
+
+        // Add input event listeners
+        this.gameBoard.querySelectorAll("input").forEach(input => {
+            input.addEventListener("input", (e) => {
+                e.target.value = e.target.value.toUpperCase();
+                if (e.target.value === e.target.dataset.correct) {
+                    this.checkWords();
+                }
+                
+                if (e.target.value) {
+                    const next = this.findNextCell(input);
+                    if (next) next.focus();
+                }
+            });
+
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Backspace" && !e.target.value) {
+                    const prev = this.findPrevCell(input);
+                    if (prev) {
+                        e.preventDefault();
+                        prev.focus();
+                        prev.value = "";
+                        prev.parentElement.classList.remove("correct");
+                    }
+                }
+            });
+        });
+    }
+
+    findNextCell(currentInput) {
+        const inputs = Array.from(this.gameBoard.querySelectorAll("input"));
+        const currentIndex = inputs.indexOf(currentInput);
+        return inputs[currentIndex + 1];
+    }
+
+    findPrevCell(currentInput) {
+        const inputs = Array.from(this.gameBoard.querySelectorAll("input"));
+        const currentIndex = inputs.indexOf(currentInput);
+        return inputs[currentIndex - 1];
+    }
+
+    createWordList() {
+        this.placedWords.forEach((placed, index) => {
+            const originalWord = this.words.find(w => w.english.toUpperCase() === placed.word);
+            if (!originalWord) return;
+
+            const wordItem = document.createElement("div");
+            wordItem.className = "word-item";
+            wordItem.textContent = `${index + 1}. ${originalWord.french}`;
+            wordItem.dataset.word = originalWord.english;
+            this.wordList.appendChild(wordItem);
+        });
+    }
+
+    checkWords() {
+        const input = event.target;
+        const x = parseInt(input.dataset.x);
+        const y = parseInt(input.dataset.y);
+
+        // Check horizontal words
+        const horizontalWords = this.placedWords.filter(w => w.direction === 'horizontal' && y === w.y);
+        horizontalWords.forEach(placed => {
+            const originalWord = this.words.find(w => w.english.toUpperCase() === placed.word);
+            if (!originalWord || this.foundWords.has(originalWord.french)) return;
+
+            let complete = true;
+            for (let i = 0; i < placed.word.length; i++) {
+                const input = this.gameBoard.querySelector(`input[data-x="${placed.x + i}"][data-y="${placed.y}"]`);
+                if (!input || input.value !== placed.word[i]) {
+                    complete = false;
+                    break;
+                }
+            }
+
+            // Toggle correct class for all letters in the word after checking completion
+            for (let i = 0; i < placed.word.length; i++) {
+                const input = this.gameBoard.querySelector(`input[data-x="${placed.x + i}"][data-y="${placed.y}"]`);
+                if (input) {
+                    input.parentElement.classList.toggle('correct', complete);
+                }
+            }
+
+            if (complete) {
+                this.foundWords.add(originalWord.french);
+                document.querySelector(`[data-word="${originalWord.english}"]`).classList.add("found");
+            }
+        });
+
+        // Check vertical words
+        const verticalWords = this.placedWords.filter(w => w.direction === 'vertical' && x === w.x);
+        verticalWords.forEach(placed => {
+            const originalWord = this.words.find(w => w.english.toUpperCase() === placed.word);
+            if (!originalWord || this.foundWords.has(originalWord.french)) return;
+
+            let complete = true;
+            for (let i = 0; i < placed.word.length; i++) {
+                const input = this.gameBoard.querySelector(`input[data-x="${placed.x}"][data-y="${placed.y + i}"]`);
+                if (!input || input.value !== placed.word[i]) {
+                    complete = false;
+                    break;
+                }
+            }
+
+            // Toggle correct class for all letters in the word after checking completion
+            for (let i = 0; i < placed.word.length; i++) {
+                const input = this.gameBoard.querySelector(`input[data-x="${placed.x}"][data-y="${placed.y + i}"]`);
+                if (input) {
+                    input.parentElement.classList.toggle('correct', complete);
+                }
+            }
+
+            if (complete) {
+                this.foundWords.add(originalWord.french);
+                document.querySelector(`[data-word="${originalWord.english}"]`).classList.add("found");
+            }
+        });
+
+        // Check for win condition
+        if (this.foundWords.size === this.words.length) {
+            this.handleWin();
+        }
+    }
+
+    startTimer() {
+        this.startTime = Date.now();
+        this.timerInterval = setInterval(() => {
+            const elapsed = Date.now() - this.startTime;
+            this.timerDisplay.textContent = this.formatTime(elapsed);
+        }, 1000);
+    }
+
+    formatTime(ms) {
+        const seconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+    }
+
+    handleWin() {
+        clearInterval(this.timerInterval);
+        const finalTime = Date.now() - this.startTime;
+        const isNewBestTime = finalTime < this.bestTime;
+        
+        if (isNewBestTime) {
+            this.setBestScore(finalTime);
+            this.updateBestScoreDisplay();
+            window.confetti.start();
+        }
+
+        const popup = new Popup();
+        const content = `
+            <h2>Congratulations!</h2>
+            <p>You completed the crossword in <span>${this.formatTime(finalTime)}</span>!</p>
+            <p class="best-score-text" style="color: ${isNewBestTime ? "#27ae60" : "#666"}">
+                ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.formatTime(this.bestTime)}`}
+            </p>
+            <button class="retry-button">Play Again</button>
+        `;
+
+        popup
+            .setContent(content)
+            .onHide(() => {
+                const canvas = window.confetti.canvas;
+                if (canvas) {
+                    canvas.style.transition = "opacity 0.3s ease-out";
+                    canvas.style.opacity = "0";
+                    setTimeout(() => {
+                        window.confetti.stop();
+                        canvas.style.opacity = "1";
+                        canvas.style.transition = "";
+                    }, 300);
+                }
+
+                setTimeout(() => {
+                    location.reload();
+                }, 300);
+            });
+
+        const retryButton = popup.popup.querySelector(".retry-button");
+        retryButton.addEventListener("click", () => {
+            popup.hide();
+        });
+
+        popup.show();
+    }
+}
+
+// Start the game
+new Crossword(15, 8);
