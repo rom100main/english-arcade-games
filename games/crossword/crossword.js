@@ -85,7 +85,9 @@ class Crossword {
     }
 
     getRandomWords(count) {
-        const shuffled = [...words].sort(() => 0.5 - Math.random());
+        const shuffled = [...words]
+            .filter(word => !word.english.includes(" "))
+            .sort(() => 0.5 - Math.random());
         return shuffled.slice(0, count);
     }
 
