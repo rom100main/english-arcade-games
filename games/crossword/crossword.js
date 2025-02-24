@@ -86,7 +86,7 @@ class Crossword {
             this.board[startY][startX + i] = {
                 letter: firstWord[i],
                 isStart: i === 0,
-                number: i === 0 ? wordNumber++ : null,
+                numbers: i === 0 ? [wordNumber++] : [],
                 word: firstWord
             };
         }
@@ -202,7 +202,7 @@ class Crossword {
                 ...cell,
                 letter: word[i],
                 isStart: i === 0 && !cell.isStart,
-                number: i === 0 && !cell.number ? number : cell.number,
+                numbers: i === 0 ? [...(cell.numbers || []), number] : (cell.numbers || []),
                 word: word
             };
         }
@@ -222,7 +222,7 @@ class Crossword {
                 ...cell,
                 letter: word[i],
                 isStart: i === 0 && !cell.isStart,
-                number: i === 0 && !cell.number ? number : cell.number,
+                numbers: i === 0 ? [...(cell.numbers || []), number] : (cell.numbers || []),
                 word: word
             };
         }
@@ -252,10 +252,10 @@ class Crossword {
                     input.dataset.correct = this.board[y][x].letter;
                     cell.appendChild(input);
                     
-                    if (this.board[y][x].number) {
+                    if (this.board[y][x].numbers && this.board[y][x].numbers.length > 0) {
                         const number = document.createElement("span");
                         number.className = "number";
-                        number.textContent = this.board[y][x].number;
+                        number.textContent = this.board[y][x].numbers.join('/');
                         cell.appendChild(number);
                     }
                 } else {
@@ -269,6 +269,12 @@ class Crossword {
         // Add input event listeners
         this.gameBoard.querySelectorAll("input").forEach(input => {
             input.addEventListener("input", (e) => {
+                // Prevent input if the cell is already correct
+                if (e.target.parentElement.classList.contains('correct')) {
+                    e.target.value = e.target.dataset.correct;
+                    return;
+                }
+
                 e.target.value = e.target.value.toUpperCase();
                 if (e.target.value === e.target.dataset.correct) {
                     this.checkWords();
@@ -281,13 +287,24 @@ class Crossword {
             });
 
             input.addEventListener("keydown", (e) => {
-                if (e.key === "Backspace" && !e.target.value) {
-                    const prev = this.findPrevCell(input);
-                    if (prev) {
-                        e.preventDefault();
-                        prev.focus();
-                        prev.value = "";
-                        prev.parentElement.classList.remove("correct");
+                // Prevent any deletion if the cell is correct
+                if (e.target.parentElement.classList.contains('correct') && (e.key === "Backspace" || e.key === "Delete")) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Handle backspace for non-correct cells
+                if (e.key === "Backspace") {
+                    if (!e.target.value) {
+                        const prev = this.findPrevCell(input);
+                        if (prev && !prev.parentElement.classList.contains('correct')) {
+                            e.preventDefault();
+                            prev.focus();
+                            prev.value = "";
+                            prev.parentElement.classList.remove("correct");
+                        }
+                    } else if (!e.target.parentElement.classList.contains('correct')) {
+                        e.target.parentElement.classList.remove("correct");
                     }
                 }
             });
@@ -297,13 +314,27 @@ class Crossword {
     findNextCell(currentInput) {
         const inputs = Array.from(this.gameBoard.querySelectorAll("input"));
         const currentIndex = inputs.indexOf(currentInput);
-        return inputs[currentIndex + 1];
+        
+        // Find the next non-correct cell
+        for (let i = currentIndex + 1; i < inputs.length; i++) {
+            if (!inputs[i].parentElement.classList.contains('correct')) {
+                return inputs[i];
+            }
+        }
+        return null;
     }
 
     findPrevCell(currentInput) {
         const inputs = Array.from(this.gameBoard.querySelectorAll("input"));
         const currentIndex = inputs.indexOf(currentInput);
-        return inputs[currentIndex - 1];
+        
+        // Find the previous non-correct cell
+        for (let i = currentIndex - 1; i >= 0; i--) {
+            if (!inputs[i].parentElement.classList.contains('correct')) {
+                return inputs[i];
+            }
+        }
+        return null;
     }
 
     createWordList() {
@@ -324,6 +355,8 @@ class Crossword {
         const x = parseInt(input.dataset.x);
         const y = parseInt(input.dataset.y);
 
+        let anyWordComplete = false;
+
         // Check horizontal words
         const horizontalWords = this.placedWords.filter(w => w.direction === 'horizontal' && y === w.y);
         horizontalWords.forEach(placed => {
@@ -339,15 +372,8 @@ class Crossword {
                 }
             }
 
-            // Toggle correct class for all letters in the word after checking completion
-            for (let i = 0; i < placed.word.length; i++) {
-                const input = this.gameBoard.querySelector(`input[data-x="${placed.x + i}"][data-y="${placed.y}"]`);
-                if (input) {
-                    input.parentElement.classList.toggle('correct', complete);
-                }
-            }
-
             if (complete) {
+                anyWordComplete = true;
                 this.foundWords.add(originalWord.french);
                 document.querySelector(`[data-word="${originalWord.english}"]`).classList.add("found");
             }
@@ -368,19 +394,37 @@ class Crossword {
                 }
             }
 
-            // Toggle correct class for all letters in the word after checking completion
-            for (let i = 0; i < placed.word.length; i++) {
-                const input = this.gameBoard.querySelector(`input[data-x="${placed.x}"][data-y="${placed.y + i}"]`);
-                if (input) {
-                    input.parentElement.classList.toggle('correct', complete);
-                }
-            }
-
             if (complete) {
+                anyWordComplete = true;
                 this.foundWords.add(originalWord.french);
                 document.querySelector(`[data-word="${originalWord.english}"]`).classList.add("found");
             }
         });
+
+        // Mark cells as correct if they are part of any completed word
+        if (anyWordComplete) {
+            // Check all placed words to mark completed cells
+            this.placedWords.forEach(placed => {
+                if (this.foundWords.has(this.words.find(w => w.english.toUpperCase() === placed.word).french)) {
+                    // Mark all cells in this completed word
+                    if (placed.direction === 'horizontal') {
+                        for (let i = 0; i < placed.word.length; i++) {
+                            const input = this.gameBoard.querySelector(`input[data-x="${placed.x + i}"][data-y="${placed.y}"]`);
+                            if (input) {
+                                input.parentElement.classList.add('correct');
+                            }
+                        }
+                    } else {
+                        for (let i = 0; i < placed.word.length; i++) {
+                            const input = this.gameBoard.querySelector(`input[data-x="${placed.x}"][data-y="${placed.y + i}"]`);
+                            if (input) {
+                                input.parentElement.classList.add('correct');
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         // Check for win condition
         if (this.foundWords.size === this.words.length) {
