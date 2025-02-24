@@ -9,6 +9,11 @@ body {
     font-size: 24px;
     justify-content: center;
 }
+.input-field {
+    display: flex;
+    justify-content: center;
+    grid-area: 15px;
+}
 .letters-field {
     display: flex;
     justify-content: center;
@@ -22,6 +27,11 @@ body {
 }
 .wrong-field {
 
+}
+.word-field {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
 }
 .message {
     text-align: center;
