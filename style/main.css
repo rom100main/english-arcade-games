@@ -29,6 +29,7 @@ body {
     color: white;
     text-decoration: none;
     border-radius: 5px;
+    box-shadow: var(--shadow-item);
     transition: background-color 0.3s;
 
     &:hover {
