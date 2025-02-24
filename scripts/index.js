@@ -1,8 +1,13 @@
 const field = document.getElementById('field');
+
 const player = document.getElementById('player');
+
 const npcs = document.querySelectorAll('.npc');
 const arcades = document.querySelectorAll('.arcade');
+
 const dialog = document.getElementById('dialog');
+const dialogTriangleLeft = document.getElementById('dialog-triangle-left');
+const dialogTriangleRight = document.getElementById('dialog-triangle-right');
 const dialogText = document.getElementById('dialog-text');
 const npcImage = document.getElementById('npc-image');
 const playerImage = document.getElementById('player-image');
@@ -97,9 +102,13 @@ function showDialog(npcId) {
         dialogText.textContent = currentDialog.text;
         npcImage.src = `assets/npc/${npcId}.png`;
         if (currentDialog.talking === 'npc') {
+            dialogTriangleLeft.classList.remove('hidden');
+            dialogTriangleRight.classList.add('hidden');
             playerImage.style.filter = 'grayscale(100%)';
             npcImage.style.filter = 'none';
         } else if (currentDialog.talking === 'player') {
+            dialogTriangleLeft.classList.add('hidden');
+            dialogTriangleRight.classList.remove('hidden');
             playerImage.style.filter = 'none';
             npcImage.style.filter = 'grayscale(100%)';
         }

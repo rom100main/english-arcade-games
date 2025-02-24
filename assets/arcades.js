@@ -1,6 +1,6 @@
 let arcadesInfo = {
     "arcade1": {
-        "link": "new_page.html"
+        "link": "memory.html"
     },
     "arcade2": {
         "link": "hangman.html"
