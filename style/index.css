@@ -57,8 +57,13 @@ body {
 }
 
 #arcade2 {
+    top: 400px;
+    left: 500px;
+}
+
+#arcade3 {
     top: 500px;
-    left: 300px;
+    left: 500px;
 }
 
 .hidden {

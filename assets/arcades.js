@@ -4,5 +4,8 @@ let arcadesInfo = {
     },
     "arcade2": {
         "link": "new_page2.html"
+    },
+    "arcade3": {
+        "link": "word_search.html"
     }
 };
