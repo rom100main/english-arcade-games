@@ -305,6 +305,39 @@ class Crossword {
             });
 
             input.addEventListener("keydown", (e) => {
+                // Handle arrow key navigation
+                if (e.key.startsWith("Arrow")) {
+                    e.preventDefault();
+                    const x = parseInt(e.target.dataset.x);
+                    const y = parseInt(e.target.dataset.y);
+                    let nextInput = null;
+
+                    switch (e.key) {
+                        case "ArrowUp":
+                            nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y - 1}"]`);
+                            if (nextInput) this.direction = 'vertical';
+                            break;
+                        case "ArrowDown":
+                            nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y + 1}"]`);
+                            if (nextInput) this.direction = 'vertical';
+                            break;
+                        case "ArrowLeft":
+                            nextInput = this.gameBoard.querySelector(`input[data-x="${x - 1}"][data-y="${y}"]`);
+                            if (nextInput) this.direction = 'horizontal';
+                            break;
+                        case "ArrowRight":
+                            nextInput = this.gameBoard.querySelector(`input[data-x="${x + 1}"][data-y="${y}"]`);
+                            if (nextInput) this.direction = 'horizontal';
+                            break;
+                    }
+
+                    if (nextInput) {
+                        nextInput.focus();
+                        this.lastInput = nextInput;
+                    }
+                    return;
+                }
+
                 // Prevent any deletion if the cell is correct
                 if (e.target.parentElement.classList.contains('correct') && (e.key === "Backspace" || e.key === "Delete")) {
                     e.preventDefault();
