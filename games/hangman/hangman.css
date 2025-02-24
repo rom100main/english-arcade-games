@@ -1,35 +1,33 @@
+div {
+    display: flex;
+    justify-content: center;
+}
 body {
     background-color: #f0f0f0;
     font-family: Arial, sans-serif;
 }
+
 .counter-field {
-    display: flex;
     gap: 12px;
     text-align: center;
     font-size: 24px;
-    justify-content: center;
 }
 .input-field {
-    display: flex;
-    justify-content: center;
-    grid-area: 15px;
+    align-items: center;
+}
+.input-field textarea {
+    height: 20px;
+    width: 20px;
+    font-size: 20px;
+    text-align: center;
+    resize: none;
+    overflow: hidden;
 }
 .letters-field {
-    display: flex;
-    justify-content: center;
-    gap: 60px;
-}
-.right-field, .wrong-field {
-    text-align: center;
-}
-.right-field {
-
-}
-.wrong-field {
-
+    margin-left: 30px;
+    gap: 30px;
 }
 .word-field {
-    display: flex;
     justify-content: center;
     gap: 20px;
 }
