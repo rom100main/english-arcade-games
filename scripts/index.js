@@ -100,7 +100,7 @@ function showDialog(npcId) {
     if (dialogs[npcId] && dialogs[npcId][currentDialogIndex]) {
         const currentDialog = dialogs[npcId][currentDialogIndex];
         dialogText.textContent = currentDialog.text;
-        npcImage.src = `assets/npc/${npcId}.png`;
+        npcImage.src = `images/npc/${npcId}.png`;
         if (currentDialog.talking === 'npc') {
             dialogTriangleLeft.classList.remove('hidden');
             dialogTriangleRight.classList.add('hidden');
