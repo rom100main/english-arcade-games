@@ -9,6 +9,8 @@ class Crossword {
         this.startTime = null;
         this.timerInterval = null;
         this.bestTime = this.getBestScore();
+        this.direction = null; // 'horizontal' or 'vertical'
+        this.lastInput = null; // Track last input cell coordinates
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
@@ -281,7 +283,23 @@ class Crossword {
                 }
                 
                 if (e.target.value) {
-                    const next = this.findNextCell(input);
+                    const currentCell = e.target;
+                    // Store current input for direction tracking
+                    if (this.lastInput) {
+                        const lastX = parseInt(this.lastInput.dataset.x);
+                        const lastY = parseInt(this.lastInput.dataset.y);
+                        const currentX = parseInt(currentCell.dataset.x);
+                        const currentY = parseInt(currentCell.dataset.y);
+                        
+                        if (currentX === lastX && currentY !== lastY) {
+                            this.direction = 'vertical';
+                        } else if (currentY === lastY && currentX !== lastX) {
+                            this.direction = 'horizontal';
+                        }
+                    }
+                    this.lastInput = currentCell;
+                    
+                    const next = this.findNextCell(currentCell);
                     if (next) next.focus();
                 }
             });
@@ -312,10 +330,27 @@ class Crossword {
     }
 
     findNextCell(currentInput) {
+        const x = parseInt(currentInput.dataset.x);
+        const y = parseInt(currentInput.dataset.y);
+        
+        // Try to move in the current direction first
+        if (this.direction === 'vertical') {
+            // Look for next cell below
+            const nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y + 1}"]`);
+            if (nextInput && !nextInput.parentElement.classList.contains('correct')) {
+                return nextInput;
+            }
+        } else {
+            // Default to horizontal or when no direction is set
+            const nextInput = this.gameBoard.querySelector(`input[data-x="${x + 1}"][data-y="${y}"]`);
+            if (nextInput && !nextInput.parentElement.classList.contains('correct')) {
+                return nextInput;
+            }
+        }
+
+        // If can't move in current direction, try any next available cell
         const inputs = Array.from(this.gameBoard.querySelectorAll("input"));
         const currentIndex = inputs.indexOf(currentInput);
-        
-        // Find the next non-correct cell
         for (let i = currentIndex + 1; i < inputs.length; i++) {
             if (!inputs[i].parentElement.classList.contains('correct')) {
                 return inputs[i];
@@ -325,10 +360,27 @@ class Crossword {
     }
 
     findPrevCell(currentInput) {
+        const x = parseInt(currentInput.dataset.x);
+        const y = parseInt(currentInput.dataset.y);
+        
+        // Try to move in the current direction first
+        if (this.direction === 'vertical') {
+            // Look for previous cell above
+            const prevInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y - 1}"]`);
+            if (prevInput && !prevInput.parentElement.classList.contains('correct')) {
+                return prevInput;
+            }
+        } else {
+            // Default to horizontal or when no direction is set
+            const prevInput = this.gameBoard.querySelector(`input[data-x="${x - 1}"][data-y="${y}"]`);
+            if (prevInput && !prevInput.parentElement.classList.contains('correct')) {
+                return prevInput;
+            }
+        }
+
+        // If can't move in current direction, try any previous available cell
         const inputs = Array.from(this.gameBoard.querySelectorAll("input"));
         const currentIndex = inputs.indexOf(currentInput);
-        
-        // Find the previous non-correct cell
         for (let i = currentIndex - 1; i >= 0; i--) {
             if (!inputs[i].parentElement.classList.contains('correct')) {
                 return inputs[i];
