@@ -19,10 +19,23 @@ class MemoryGame {
 
     setBestScore(score) {
         const cookieName = "rom100main.english-game";
-        const cookieValue = JSON.stringify({ memory: score });
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(cookieName+'='));
+        
+        let data = {};
+        if (cookieValue) {
+            try {
+                data = JSON.parse(cookieValue.split('=')[1]);
+            } catch {
+                data = {};
+            }
+        }
+        
+        data.memory = score;
         const date = new Date();
-        date.setFullYear(date.getFullYear() + 1); // Cookie expires in 1 year
-        document.cookie = `${cookieName}=${cookieValue}; expires=${date.toUTCString()}; path=/`;
+        date.setFullYear(date.getFullYear() + 1);
+        document.cookie = `${cookieName}=${JSON.stringify(data)};`;
         this.bestScore = score;
     }
 

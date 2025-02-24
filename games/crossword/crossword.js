@@ -23,10 +23,23 @@ class Crossword {
 
     setBestScore(score) {
         const cookieName = "rom100main.english-game";
-        const cookieValue = JSON.stringify({ crossword: score });
+        const cookieValue = document.cookie
+            .split("; ")
+            .find(row => row.startsWith(cookieName+"="));
+        
+        let data = {};
+        if (cookieValue) {
+            try {
+                data = JSON.parse(cookieValue.split("=")[1]);
+            } catch {
+                data = {};
+            }
+        }
+        
+        data.crossword = score;
         const date = new Date();
         date.setFullYear(date.getFullYear() + 1);
-        document.cookie = `${cookieName}=${cookieValue}; expires=${date.toUTCString()}; path=/`;
+        document.cookie = `${cookieName}=${JSON.stringify(data)};`;
         this.bestTime = score;
     }
 

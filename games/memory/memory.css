@@ -78,7 +78,7 @@
         &.matched {
             background-color: var(--green);
             cursor: default;
-            transform: scale(0.98);
+            transform: scale(0.98) rotateY(180deg);
         }
     }
 
