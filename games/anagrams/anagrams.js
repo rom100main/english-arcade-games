@@ -209,9 +209,9 @@ class Anagrams {
         const popup = new Popup();
         const content = `
             <h2>Congratulations!</h2>
-            <p>You completed all anagrams in <span>${this.formatTime(finalTime)}</span>!</p>
+            <p>You completed all anagrams in <span>${this.timer.formatTime(finalTime)}</span>!</p>
             <p class="best-score-text" style="color: ${isNewBestTime ? "#27ae60" : "#666"}">
-                ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.formatTime(this.bestTime)}`}
+                ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.timer.formatTime(this.bestTime)}`}
             </p>
             <button class="retry-button">Play Again</button>
         `;
