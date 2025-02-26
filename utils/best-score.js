@@ -39,7 +39,7 @@ const BestScore = {
         if (cookieValue) {
             try {
                 const data = JSON.parse(cookieValue.split("=")[1]);
-                return data[game] || Infinity;
+                return data[game] || null;
             } catch {
                 return null;
             }

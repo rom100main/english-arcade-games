@@ -134,17 +134,7 @@ class WordPyramid {
         popup
             .setContent(content)
             .onHide(() => {
-                const canvas = window.confetti.canvas;
-                if (canvas) {
-                    canvas.style.transition = "opacity 0.3s ease-out";
-                    canvas.style.opacity = "0";
-                    setTimeout(() => {
-                        window.confetti.stop();
-                        canvas.style.opacity = "1";
-                        canvas.style.transition = "";
-                    }, 300);
-                }
-                
+                window.confetti.hide();
                 setTimeout(() => {
                     location.reload();
                 }, 300);

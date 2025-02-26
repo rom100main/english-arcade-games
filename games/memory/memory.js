@@ -75,19 +75,7 @@ class MemoryGame {
         this.popup
             .setContent(content)
             .onHide(() => {
-                // Fade out confetti
-                const canvas = window.confetti.canvas;
-                if (canvas) {
-                    canvas.style.transition = 'opacity 0.3s ease-out';
-                    canvas.style.opacity = '0';
-                    setTimeout(() => {
-                        window.confetti.stop();
-                        canvas.style.opacity = '1';
-                        canvas.style.transition = '';
-                    }, 300);
-                }
-
-                // Reset game after transition
+                window.confetti.hide();
                 setTimeout(() => {
                     this.resetGame();
                     this.popup.destroy();
