@@ -18,6 +18,7 @@ class WordPyramid {
         this.updateWordCount();
     }
 
+    // Update
     updateWordCount() {
         this.wordCount.textContent = this.words.length;
     }
@@ -27,15 +28,7 @@ class WordPyramid {
         bestScoreElement.textContent = this.bestScore === null ? "-" : this.bestScore;
     }
 
-    setupEventListeners() {
-        this.submitBtn.addEventListener("click", () => this.handleSubmit());
-        this.input.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                this.handleSubmit();
-            }
-        });
-    }
-
+    // Utils
     canMakeWord(newWord, sourceWord) {
         if (this.words.includes(newWord)) return false;
 
@@ -61,6 +54,39 @@ class WordPyramid {
         return dictionary.hasOwnProperty(word.toLowerCase());
     }
 
+    showError() {
+        this.input.classList.add("invalid");
+        setTimeout(() => {
+            this.input.classList.remove("invalid");
+        }, 500);
+    }
+
+    addWordToDisplay(word) {
+        const wordElement = document.createElement("div");
+        wordElement.className = "pyramid-word";
+        
+        [...word.toUpperCase()].forEach(letter => {
+            const letterCell = document.createElement("div");
+            letterCell.className = "letter-cell";
+            letterCell.textContent = letter;
+            wordElement.appendChild(letterCell);
+        });
+        
+        this.pyramidContainer.appendChild(wordElement);
+        this.pyramidContainer.scrollTop -= 60;
+    }
+
+    // Events
+    setupEventListeners() {
+        this.submitBtn.addEventListener("click", () => this.handleSubmit());
+        this.input.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                this.handleSubmit();
+            }
+        });
+    }
+
+    // Handlers
     handleSubmit() {
         const newWord = this.input.value.trim().toLowerCase();
         
@@ -86,28 +112,6 @@ class WordPyramid {
         this.addWordToDisplay(newWord);
         this.updateWordCount();
         this.input.value = "";
-    }
-
-    showError() {
-        this.input.classList.add("invalid");
-        setTimeout(() => {
-            this.input.classList.remove("invalid");
-        }, 500);
-    }
-
-    addWordToDisplay(word) {
-        const wordElement = document.createElement("div");
-        wordElement.className = "pyramid-word";
-        
-        [...word.toUpperCase()].forEach(letter => {
-            const letterCell = document.createElement("div");
-            letterCell.className = "letter-cell";
-            letterCell.textContent = letter;
-            wordElement.appendChild(letterCell);
-        });
-        
-        this.pyramidContainer.appendChild(wordElement);
-        this.pyramidContainer.scrollTop -= 60;
     }
 
     handleGameOver() {

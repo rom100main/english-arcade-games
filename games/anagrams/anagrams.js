@@ -26,23 +26,7 @@ class Anagrams {
         this.createNewAnagram();
     }
 
-    scrambleWord(word) {
-        const array = word.split('');
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        const scrambled = array.join('');
-        return scrambled === word ? this.scrambleWord(word) : scrambled;
-    }
-
-    updateBestScoreDisplay() {
-        const bestScoreElement = document.getElementById("best-score");
-        if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
-        }
-    }
-
+    // Create
     createNewAnagram() {
         const remainingWords = this.words.filter(word => 
             !this.foundWords.has(word.french)
@@ -126,6 +110,43 @@ class Anagrams {
         });
     }
 
+    // Update
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById("best-score");
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
+        }
+    }
+
+    // UI utils
+    scrambleWord(word) {
+        const array = word.split('');
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        const scrambled = array.join('');
+        return scrambled === word ? this.scrambleWord(word) : scrambled;
+    }
+
+    checkAnswer() {
+        const wordInput = document.getElementById("word-input");
+        const answer = wordInput.value.trim().toUpperCase();
+
+        if (answer === this.currentScrambled.original) {
+            this.foundWords.add(this.currentScrambled.french);
+            
+            document.querySelector(`.word-item[data-word="${this.currentScrambled.french}"]`)
+                .classList.add("found");
+
+            this.createNewAnagram();
+        } else {
+            wordInput.classList.add("shake");
+            setTimeout(() => wordInput.classList.remove("shake"), 500);
+        }
+    }
+
+    // Handlers
     setupTileHandlers() {
         const tiles = document.querySelectorAll(".letter-tile");
         let selectedTiles = [];
@@ -152,23 +173,6 @@ class Anagrams {
                 }
             });
         });
-    }
-
-    checkAnswer() {
-        const wordInput = document.getElementById("word-input");
-        const answer = wordInput.value.trim().toUpperCase();
-
-        if (answer === this.currentScrambled.original) {
-            this.foundWords.add(this.currentScrambled.french);
-            
-            document.querySelector(`.word-item[data-word="${this.currentScrambled.french}"]`)
-                .classList.add("found");
-
-            this.createNewAnagram();
-        } else {
-            wordInput.classList.add("shake");
-            setTimeout(() => wordInput.classList.remove("shake"), 500);
-        }
     }
 
     handleGameOver() {

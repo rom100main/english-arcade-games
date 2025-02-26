@@ -20,13 +20,6 @@ class Crossword {
         this.timer.start();
     }
 
-    updateBestScoreDisplay() {
-        const bestScoreElement = document.getElementById("best-score");
-        if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
-        }
-    }
-
     init() {
         this.words = Random.getRandomWords(this.nbWords);
         
@@ -39,6 +32,153 @@ class Crossword {
         this.createWordList();
     }
 
+    // Create
+    createBoard() {
+        this.gameBoard.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
+        
+        for (let y = 0; y < this.size; y++) {
+            for (let x = 0; x < this.size; x++) {
+                const cell = document.createElement("div");
+                cell.className = "cell";
+                
+                if (this.board[y][x] && this.board[y][x].letter) {
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.maxLength = 1;
+                    input.dataset.x = x;
+                    input.dataset.y = y;
+                    input.dataset.correct = this.board[y][x].letter;
+                    cell.appendChild(input);
+                    
+                    if (this.board[y][x].numbers && this.board[y][x].numbers.length > 0) {
+                        const number = document.createElement("span");
+                        number.className = "number";
+                        number.textContent = this.board[y][x].numbers.join('/');
+                        cell.appendChild(number);
+                    }
+                } else {
+                    cell.classList.add("empty");
+                }
+                
+                this.gameBoard.appendChild(cell);
+            }
+        }
+
+        // Add input event listeners
+        this.gameBoard.querySelectorAll("input").forEach(input => {
+            input.addEventListener("input", (e) => {
+                // Prevent input if the cell is already correct
+                if (e.target.parentElement.classList.contains('correct')) {
+                    e.target.value = e.target.dataset.correct;
+                    return;
+                }
+
+                e.target.value = e.target.value.toUpperCase();
+                if (e.target.value === e.target.dataset.correct) {
+                    this.checkWords();
+                }
+                
+                if (e.target.value) {
+                    const currentCell = e.target;
+                    // Store current input for direction tracking
+                    if (this.lastInput) {
+                        const lastX = parseInt(this.lastInput.dataset.x);
+                        const lastY = parseInt(this.lastInput.dataset.y);
+                        const currentX = parseInt(currentCell.dataset.x);
+                        const currentY = parseInt(currentCell.dataset.y);
+                        
+                        if (currentX === lastX && currentY !== lastY) {
+                            this.direction = 'vertical';
+                        } else if (currentY === lastY && currentX !== lastX) {
+                            this.direction = 'horizontal';
+                        }
+                    }
+                    this.lastInput = currentCell;
+                    
+                    const next = this.findNextCell(currentCell);
+                    if (next) next.focus();
+                }
+            });
+
+            input.addEventListener("keydown", (e) => {
+                if (e.key.startsWith("Arrow")) {
+                    e.preventDefault();
+                    const x = parseInt(e.target.dataset.x);
+                    const y = parseInt(e.target.dataset.y);
+                    let nextInput = null;
+
+                    switch (e.key) {
+                        case "ArrowUp":
+                            nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y - 1}"]`);
+                            if (nextInput) this.direction = 'vertical';
+                            break;
+                        case "ArrowDown":
+                            nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y + 1}"]`);
+                            if (nextInput) this.direction = 'vertical';
+                            break;
+                        case "ArrowLeft":
+                            nextInput = this.gameBoard.querySelector(`input[data-x="${x - 1}"][data-y="${y}"]`);
+                            if (nextInput) this.direction = 'horizontal';
+                            break;
+                        case "ArrowRight":
+                            nextInput = this.gameBoard.querySelector(`input[data-x="${x + 1}"][data-y="${y}"]`);
+                            if (nextInput) this.direction = 'horizontal';
+                            break;
+                    }
+
+                    if (nextInput) {
+                        nextInput.focus();
+                        this.lastInput = nextInput;
+                    }
+                    return;
+                }
+
+                // Prevent any deletion if cell is correct
+                if (e.target.parentElement.classList.contains('correct') && (e.key === "Backspace" || e.key === "Delete")) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Handle backspace for non-correct cells
+                if (e.key === "Backspace") {
+                    if (!e.target.value) {
+                        const prev = this.findPrevCell(input);
+                        if (prev && !prev.parentElement.classList.contains('correct')) {
+                            e.preventDefault();
+                            prev.focus();
+                            prev.value = "";
+                            prev.parentElement.classList.remove("correct");
+                        }
+                    } else if (!e.target.parentElement.classList.contains('correct')) {
+                        e.target.parentElement.classList.remove("correct");
+                    }
+                }
+            });
+        });
+    }
+
+    createWordList() {
+        this.placedWords.forEach((placed, index) => {
+            const originalWord = this.words.find(w => w.english.toUpperCase() === placed.word);
+            if (!originalWord) return;
+
+            const wordItem = document.createElement("div");
+            wordItem.className = "word-item";
+            wordItem.textContent = `${index + 1}. ${originalWord.french}`;
+            wordItem.dataset.word = originalWord.english;
+            this.wordList.appendChild(wordItem);
+        });
+    }
+
+    // Update
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById("best-score");
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
+        }
+    }
+
+    // Utils
     placeWords() {
         let wordNumber = 1;
         
@@ -196,130 +336,6 @@ class Crossword {
         });
     }
 
-    createBoard() {
-        this.gameBoard.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
-        
-        for (let y = 0; y < this.size; y++) {
-            for (let x = 0; x < this.size; x++) {
-                const cell = document.createElement("div");
-                cell.className = "cell";
-                
-                if (this.board[y][x] && this.board[y][x].letter) {
-                    const input = document.createElement("input");
-                    input.type = "text";
-                    input.maxLength = 1;
-                    input.dataset.x = x;
-                    input.dataset.y = y;
-                    input.dataset.correct = this.board[y][x].letter;
-                    cell.appendChild(input);
-                    
-                    if (this.board[y][x].numbers && this.board[y][x].numbers.length > 0) {
-                        const number = document.createElement("span");
-                        number.className = "number";
-                        number.textContent = this.board[y][x].numbers.join('/');
-                        cell.appendChild(number);
-                    }
-                } else {
-                    cell.classList.add("empty");
-                }
-                
-                this.gameBoard.appendChild(cell);
-            }
-        }
-
-        // Add input event listeners
-        this.gameBoard.querySelectorAll("input").forEach(input => {
-            input.addEventListener("input", (e) => {
-                // Prevent input if the cell is already correct
-                if (e.target.parentElement.classList.contains('correct')) {
-                    e.target.value = e.target.dataset.correct;
-                    return;
-                }
-
-                e.target.value = e.target.value.toUpperCase();
-                if (e.target.value === e.target.dataset.correct) {
-                    this.checkWords();
-                }
-                
-                if (e.target.value) {
-                    const currentCell = e.target;
-                    // Store current input for direction tracking
-                    if (this.lastInput) {
-                        const lastX = parseInt(this.lastInput.dataset.x);
-                        const lastY = parseInt(this.lastInput.dataset.y);
-                        const currentX = parseInt(currentCell.dataset.x);
-                        const currentY = parseInt(currentCell.dataset.y);
-                        
-                        if (currentX === lastX && currentY !== lastY) {
-                            this.direction = 'vertical';
-                        } else if (currentY === lastY && currentX !== lastX) {
-                            this.direction = 'horizontal';
-                        }
-                    }
-                    this.lastInput = currentCell;
-                    
-                    const next = this.findNextCell(currentCell);
-                    if (next) next.focus();
-                }
-            });
-
-            input.addEventListener("keydown", (e) => {
-                if (e.key.startsWith("Arrow")) {
-                    e.preventDefault();
-                    const x = parseInt(e.target.dataset.x);
-                    const y = parseInt(e.target.dataset.y);
-                    let nextInput = null;
-
-                    switch (e.key) {
-                        case "ArrowUp":
-                            nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y - 1}"]`);
-                            if (nextInput) this.direction = 'vertical';
-                            break;
-                        case "ArrowDown":
-                            nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y + 1}"]`);
-                            if (nextInput) this.direction = 'vertical';
-                            break;
-                        case "ArrowLeft":
-                            nextInput = this.gameBoard.querySelector(`input[data-x="${x - 1}"][data-y="${y}"]`);
-                            if (nextInput) this.direction = 'horizontal';
-                            break;
-                        case "ArrowRight":
-                            nextInput = this.gameBoard.querySelector(`input[data-x="${x + 1}"][data-y="${y}"]`);
-                            if (nextInput) this.direction = 'horizontal';
-                            break;
-                    }
-
-                    if (nextInput) {
-                        nextInput.focus();
-                        this.lastInput = nextInput;
-                    }
-                    return;
-                }
-
-                // Prevent any deletion if cell is correct
-                if (e.target.parentElement.classList.contains('correct') && (e.key === "Backspace" || e.key === "Delete")) {
-                    e.preventDefault();
-                    return;
-                }
-                
-                // Handle backspace for non-correct cells
-                if (e.key === "Backspace") {
-                    if (!e.target.value) {
-                        const prev = this.findPrevCell(input);
-                        if (prev && !prev.parentElement.classList.contains('correct')) {
-                            e.preventDefault();
-                            prev.focus();
-                            prev.value = "";
-                            prev.parentElement.classList.remove("correct");
-                        }
-                    } else if (!e.target.parentElement.classList.contains('correct')) {
-                        e.target.parentElement.classList.remove("correct");
-                    }
-                }
-            });
-        });
-    }
-
     findNextCell(currentInput) {
         const x = parseInt(currentInput.dataset.x);
         const y = parseInt(currentInput.dataset.y);
@@ -372,19 +388,6 @@ class Crossword {
             }
         }
         return null;
-    }
-
-    createWordList() {
-        this.placedWords.forEach((placed, index) => {
-            const originalWord = this.words.find(w => w.english.toUpperCase() === placed.word);
-            if (!originalWord) return;
-
-            const wordItem = document.createElement("div");
-            wordItem.className = "word-item";
-            wordItem.textContent = `${index + 1}. ${originalWord.french}`;
-            wordItem.dataset.word = originalWord.english;
-            this.wordList.appendChild(wordItem);
-        });
     }
 
     checkWords() {
@@ -465,6 +468,7 @@ class Crossword {
         }
     }
 
+    // Handlers
     handleGameOver() {
         const finalTime = this.timer.stop();
         const isNewBestTime = this.bestTime === null || finalTime < this.bestTime;

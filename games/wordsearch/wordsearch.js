@@ -17,13 +17,6 @@ class WordSearch {
         this.init();
     }
 
-    updateBestScoreDisplay() {
-        const bestScoreElement = document.getElementById("best-score");
-        if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
-        }
-    }
-
     init() {
         this.board = Array(this.size).fill(null)
             .map(() => Array(this.size).fill(""));
@@ -44,6 +37,41 @@ class WordSearch {
         this.timer.start();
     }
 
+    // Create
+    createBoard() {
+        this.gameBoard.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
+        
+        this.board.forEach((row, y) => {
+            row.forEach((letter, x) => {
+                const cell = document.createElement("div");
+                cell.className = "cell";
+                cell.textContent = letter;
+                cell.dataset.x = x;
+                cell.dataset.y = y;
+                this.gameBoard.appendChild(cell);
+            });
+        });
+    }
+
+    createWordList() {
+        this.words.forEach(({ french }) => {
+            const wordItem = document.createElement("div");
+            wordItem.className = "word-item";
+            wordItem.textContent = french;
+            wordItem.dataset.word = french;
+            this.wordList.appendChild(wordItem);
+        });
+    }
+
+    // Update
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById("best-score");
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
+        }
+    }
+
+    // Utils
     placeWord(word) {
         const directions = [
             [0, 1],   // horizontal
@@ -112,31 +140,38 @@ class WordSearch {
         }
     }
 
-    createBoard() {
-        this.gameBoard.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
-        
-        this.board.forEach((row, y) => {
-            row.forEach((letter, x) => {
-                const cell = document.createElement("div");
-                cell.className = "cell";
-                cell.textContent = letter;
-                cell.dataset.x = x;
-                cell.dataset.y = y;
-                this.gameBoard.appendChild(cell);
+    getSelectedWord() {
+        return this.selectedCells
+            .map(cell => this.board[cell.y][cell.x])
+            .join("");
+    }
+
+    checkWord(selectedWord) {
+        const word = this.words.find(w => 
+            w.english.replace(/\s/g, "").toUpperCase() === selectedWord
+        );
+
+        if (word && !this.foundWords.has(word.french)) {
+            this.foundWords.add(word.french);
+            
+            this.selectedCells.forEach(cell => {
+                cell.element.classList.remove("selected");
+                cell.element.classList.add("found");
             });
-        });
+            
+            document.querySelector(`.word-item[data-word="${word.french}"]`)
+                .classList.add("found");
+
+            if (this.foundWords.size === this.words.length) {
+                this.handleGameOver();
+            }
+            
+            return true;
+        }
+        return false;
     }
 
-    createWordList() {
-        this.words.forEach(({ french }) => {
-            const wordItem = document.createElement("div");
-            wordItem.className = "word-item";
-            wordItem.textContent = french;
-            wordItem.dataset.word = french;
-            this.wordList.appendChild(wordItem);
-        });
-    }
-
+    // Events
     setupEventListeners() {
         let isSelecting = false;
         let startCell = null;
@@ -208,37 +243,7 @@ class WordSearch {
         });
     }
 
-    getSelectedWord() {
-        return this.selectedCells
-            .map(cell => this.board[cell.y][cell.x])
-            .join("");
-    }
-
-    checkWord(selectedWord) {
-        const word = this.words.find(w => 
-            w.english.replace(/\s/g, "").toUpperCase() === selectedWord
-        );
-
-        if (word && !this.foundWords.has(word.french)) {
-            this.foundWords.add(word.french);
-            
-            this.selectedCells.forEach(cell => {
-                cell.element.classList.remove("selected");
-                cell.element.classList.add("found");
-            });
-            
-            document.querySelector(`.word-item[data-word="${word.french}"]`)
-                .classList.add("found");
-
-            if (this.foundWords.size === this.words.length) {
-                this.handleGameOver();
-            }
-            
-            return true;
-        }
-        return false;
-    }
-
+    // Handlers
     handleGameOver() {
         const finalTime = this.timer.stop();
         const isNewBestTime = this.bestTime === null || finalTime < this.bestTime;

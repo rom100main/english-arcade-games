@@ -61,22 +61,7 @@ class MemoryGame {
         }, 300); // card flip animation duration
     }
 
-    shuffle(array) {
-        const shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-    }
-
-    updateBestScoreDisplay() {
-        const bestScoreElement = document.getElementById('best-score');
-        if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestScore === null ? '-' : this.bestScore;
-        }
-    }
-
+    // Create
     createCard(card, index) {
         const cardElement = document.createElement('div');
         cardElement.className = 'card';
@@ -97,6 +82,24 @@ class MemoryGame {
         return cardElement;
     }
 
+    // Update
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById('best-score');
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestScore === null ? '-' : this.bestScore;
+        }
+    }
+
+    // Utils
+    shuffle(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+    
     flipCard(cardElement, card) {
         if (
             this.isLocked || 
@@ -138,6 +141,7 @@ class MemoryGame {
         return type === 'french' ? word.english : word.french;
     }
 
+    // Handlers
     handleMatch() {
         this.flippedCards.forEach(({ element }) => {
             element.classList.add('matched');
