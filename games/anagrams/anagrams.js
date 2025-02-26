@@ -113,7 +113,7 @@ class Anagrams {
         );
 
         if (remainingWords.length === 0) {
-            this.handleWin();
+            this.handleGameOver();
             return;
         }
 
@@ -195,7 +195,7 @@ class Anagrams {
         }
     }
 
-    handleWin() {
+    handleGameOver() {
         const finalTime = this.timer.stop();
         const isNewBestTime = this.bestTime === null || finalTime < this.bestTime;
         

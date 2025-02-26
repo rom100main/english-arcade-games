@@ -489,11 +489,11 @@ class Crossword {
 
         // Check for win condition
         if (this.foundWords.size === this.words.length) {
-            this.handleWin();
+            this.handleGameOver();
         }
     }
 
-    handleWin() {
+    handleGameOver() {
         const finalTime = this.timer.stop();
         const isNewBestTime = this.bestTime === null || finalTime < this.bestTime;
         

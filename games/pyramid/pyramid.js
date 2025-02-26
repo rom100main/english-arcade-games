@@ -123,7 +123,7 @@ class WordPyramid {
 
         const popup = new Popup();
         const content = `
-            <h2>Game Over!</h2>
+            <h2>Congratulations!</h2>
             <p>You created a pyramid with ${finalScore} words!</p>
             <p class="best-score-text" style="color: ${isNewBestScore ? "#27ae60" : "#666"}">
                 ${isNewBestScore ? "🎉 New Best Score! 🎉" : `Best Score: ${this.bestScore === null ? "-" : this.bestScore} words`}

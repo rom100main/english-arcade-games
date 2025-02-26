@@ -15,8 +15,6 @@ class WordSearch {
         this.timer = new Timer();
         
         this.init();
-        this.updateBestScoreDisplay();
-        this.timer.start();
     }
 
 
@@ -28,29 +26,23 @@ class WordSearch {
     }
 
     init() {
-        // Initialize empty board
         this.board = Array(this.size).fill(null)
             .map(() => Array(this.size).fill(""));
         
-        // Select random words
         this.words = this.getRandomWords(this.nbWords);
         
-        // Place words on board
         this.words.forEach(word => {
             this.placeWord(word.english);
         });
-        
-        // Fill empty spaces
         this.fillEmptySpaces();
         
-        // Create the game board UI
         this.createBoard();
-        
-        // Create word list UI
         this.createWordList();
         
-        // Setup event listeners
         this.setupEventListeners();
+
+        this.updateBestScoreDisplay();
+        this.timer.start();
     }
 
     getRandomWords(count) {
@@ -251,7 +243,7 @@ class WordSearch {
                 .classList.add("found");
 
             if (this.foundWords.size === this.words.length) {
-                this.handleWin();
+                this.handleGameOver();
             }
             
             return true;
@@ -259,7 +251,7 @@ class WordSearch {
         return false;
     }
 
-    handleWin() {
+    handleGameOver() {
         const finalTime = this.timer.stop();
         const isNewBestTime = this.bestTime === null || finalTime < this.bestTime;
         
