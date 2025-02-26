@@ -78,10 +78,8 @@ class MemoryGame {
             window.confetti.start();
         }
 
-        // Create new popup instance
         this.popup = new Popup();
 
-        // Set popup content
         const content = `
             <h2>Congratulations!</h2>
             <p>You completed the game in <span id="final-attempts">${this.attempts}</span> attempts!</p>
@@ -91,7 +89,6 @@ class MemoryGame {
             <button class="retry-button">Play Again</button>
         `;
 
-        // Setup popup
         this.popup
             .setContent(content)
             .onHide(() => {
@@ -103,13 +100,11 @@ class MemoryGame {
                 }, 300);
             });
 
-        // Setup retry button
         const retryButton = this.popup.popup.querySelector('.retry-button');
         retryButton.addEventListener('click', () => {
             this.popup.hide();
         });
 
-        // Show popup
         this.popup.show();
     }
 
