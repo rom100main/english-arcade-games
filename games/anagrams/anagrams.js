@@ -16,13 +16,6 @@ class Anagrams {
         this.timer.start();
     }
 
-    updateBestScoreDisplay() {
-        const bestScoreElement = document.getElementById("best-score");
-        if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
-        }
-    }
-
     init() {
         this.words = Random.getRandomWords(this.nbWords);
         
@@ -41,6 +34,49 @@ class Anagrams {
         }
         const scrambled = array.join('');
         return scrambled === word ? this.scrambleWord(word) : scrambled;
+    }
+
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById("best-score");
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
+        }
+    }
+
+    createNewAnagram() {
+        const remainingWords = this.words.filter(word => 
+            !this.foundWords.has(word.french)
+        );
+
+        if (remainingWords.length === 0) {
+            this.handleGameOver();
+            return;
+        }
+
+        // Next words
+        const word = remainingWords[Math.floor(Math.random() * remainingWords.length)];
+        this.currentScrambled = {
+            original: word.english.toUpperCase(),
+            french: word.french,
+            scrambled: this.scrambleWord(word.english.toUpperCase())
+        };
+
+        const anagramContainer = this.gameBoard.querySelector(".anagram-container");
+        anagramContainer.innerHTML = "";
+
+        [...this.currentScrambled.scrambled].forEach(letter => {
+            const tile = document.createElement("div");
+            tile.className = "letter-tile";
+            tile.textContent = letter;
+            anagramContainer.appendChild(tile);
+        });
+
+        const wordInput = document.getElementById("word-input");
+        if (wordInput) {
+            wordInput.value = "";
+        }
+
+        this.setupTileHandlers();
     }
 
     createBoard() {
@@ -88,42 +124,6 @@ class Anagrams {
             wordItem.dataset.word = french;
             this.wordList.appendChild(wordItem);
         });
-    }
-
-    createNewAnagram() {
-        const remainingWords = this.words.filter(word => 
-            !this.foundWords.has(word.french)
-        );
-
-        if (remainingWords.length === 0) {
-            this.handleGameOver();
-            return;
-        }
-
-        // Next words
-        const word = remainingWords[Math.floor(Math.random() * remainingWords.length)];
-        this.currentScrambled = {
-            original: word.english.toUpperCase(),
-            french: word.french,
-            scrambled: this.scrambleWord(word.english.toUpperCase())
-        };
-
-        const anagramContainer = this.gameBoard.querySelector(".anagram-container");
-        anagramContainer.innerHTML = "";
-
-        [...this.currentScrambled.scrambled].forEach(letter => {
-            const tile = document.createElement("div");
-            tile.className = "letter-tile";
-            tile.textContent = letter;
-            anagramContainer.appendChild(tile);
-        });
-
-        const wordInput = document.getElementById("word-input");
-        if (wordInput) {
-            wordInput.value = "";
-        }
-
-        this.setupTileHandlers();
     }
 
     setupTileHandlers() {
