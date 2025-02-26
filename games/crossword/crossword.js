@@ -20,7 +20,6 @@ class Crossword {
         this.timer.start();
     }
 
-
     updateBestScoreDisplay() {
         const bestScoreElement = document.getElementById("best-score");
         if (bestScoreElement) {
@@ -29,7 +28,7 @@ class Crossword {
     }
 
     init() {
-        this.words = this.getRandomWords(this.nbWords);
+        this.words = Random.getRandomWords(this.nbWords);
         
         this.words.sort((a, b) => b.english.length - a.english.length); // for better placement
         
@@ -38,13 +37,6 @@ class Crossword {
         this.createBoard();
 
         this.createWordList();
-    }
-
-    getRandomWords(count) {
-        const shuffled = [...words]
-            .filter(word => !word.english.includes(" "))
-            .sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
     }
 
     placeWords() {
@@ -145,7 +137,6 @@ class Crossword {
         for (let i = 0; i < word.length; i++) {
             const cell = this.board[startY + i]?.[x];
             if (cell && cell.letter) {
-                // If there's a letter, it must match
                 if (cell.letter !== word[i]) return false;
                 hasIntersection = true;
                 continue;

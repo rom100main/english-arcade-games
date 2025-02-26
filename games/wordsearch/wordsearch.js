@@ -17,7 +17,6 @@ class WordSearch {
         this.init();
     }
 
-
     updateBestScoreDisplay() {
         const bestScoreElement = document.getElementById("best-score");
         if (bestScoreElement) {
@@ -29,7 +28,7 @@ class WordSearch {
         this.board = Array(this.size).fill(null)
             .map(() => Array(this.size).fill(""));
         
-        this.words = this.getRandomWords(this.nbWords);
+        this.words = Random.getRandomWords(this.nbWords);
         
         this.words.forEach(word => {
             this.placeWord(word.english);
@@ -43,13 +42,6 @@ class WordSearch {
 
         this.updateBestScoreDisplay();
         this.timer.start();
-    }
-
-    getRandomWords(count) {
-        const shuffled = [...words]
-            .filter(word => !word.english.includes(" "))
-            .sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
     }
 
     placeWord(word) {
@@ -94,7 +86,6 @@ class WordSearch {
     }
 
     canPlaceWord(wordArray, startX, startY, direction) {
-        // Check if word fits on board
         for (let i = 0; i < wordArray.length; i++) {
             const y = startY + i * direction[0];
             const x = startX + i * direction[1];

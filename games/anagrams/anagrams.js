@@ -24,20 +24,13 @@ class Anagrams {
     }
 
     init() {
-        this.words = this.getRandomWords(this.nbWords);
+        this.words = Random.getRandomWords(this.nbWords);
         
         this.createBoard();
         
         this.createWordList();
 
         this.createNewAnagram();
-    }
-
-    getRandomWords(count) {
-        return [...words]
-            .filter(word => !word.english.includes(" "))
-            .sort(() => 0.5 - Math.random())
-            .slice(0, count);
     }
 
     scrambleWord(word) {
