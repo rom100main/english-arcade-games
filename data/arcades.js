@@ -1,4 +1,4 @@
-let arcadesInfo = {
+const arcadesInfo = {
     "arcade1": {
         "link": "games/memory/memory.html"
     },
