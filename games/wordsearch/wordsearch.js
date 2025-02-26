@@ -103,7 +103,6 @@ class WordSearch {
                 return false;
             }
             
-            // Check if space is empty or has matching letter
             if (this.board[y][x] !== "" && this.board[y][x] !== wordArray[i]) {
                 return false;
             }
@@ -161,7 +160,6 @@ class WordSearch {
             const y = parseInt(cell.dataset.y);
             
             if (startCell) {
-                // Clear previous selection
                 document.querySelectorAll(".cell.selected").forEach(cell => {
                     cell.classList.remove("selected");
                 });
@@ -233,7 +231,6 @@ class WordSearch {
         if (word && !this.foundWords.has(word.french)) {
             this.foundWords.add(word.french);
             
-            // Update UI
             this.selectedCells.forEach(cell => {
                 cell.element.classList.remove("selected");
                 cell.element.classList.add("found");
@@ -290,5 +287,4 @@ class WordSearch {
     }
 }
 
-// Start the game
 new WordSearch(15, 8);

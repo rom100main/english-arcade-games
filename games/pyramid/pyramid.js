@@ -149,5 +149,4 @@ class WordPyramid {
     }
 }
 
-// Start the game
 new WordPyramid();

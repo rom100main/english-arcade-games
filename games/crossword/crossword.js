@@ -8,7 +8,7 @@ class Crossword {
         this.foundWords = new Set();
         this.bestTime = BestScore.getBestScore('crossword');
         this.direction = null; // 'horizontal' or 'vertical'
-        this.lastInput = null; // Track last input cell coordinates
+        this.lastInput = null; // track last input cell coordinates
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
@@ -29,19 +29,14 @@ class Crossword {
     }
 
     init() {
-        // Select random words
         this.words = this.getRandomWords(this.nbWords);
         
-        // Sort words by length (descending) for better placement
-        this.words.sort((a, b) => b.english.length - a.english.length);
+        this.words.sort((a, b) => b.english.length - a.english.length); // for better placement
         
-        // Place words on board
         this.placeWords();
         
-        // Create the game board UI
         this.createBoard();
-        
-        // Create word list UI with hints
+
         this.createWordList();
     }
 
@@ -122,15 +117,13 @@ class Crossword {
         for (let i = 0; i < word.length; i++) {
             const cell = this.board[y][startX + i];
             if (cell && cell.letter) {
-                // If there's a letter, it must match
                 if (cell.letter !== word[i]) return false;
                 hasIntersection = true;
                 continue;
             }
 
-            // If no intersection at this point, check for parallel words
+            // Check for parallel words space
             if (!hasIntersection) {
-                // Check cells above and below for parallel words
                 if (y > 0 && this.board[y-1][startX + i]?.letter) return false;
                 if (y < this.size-1 && this.board[y+1][startX + i]?.letter) return false;
             }
@@ -158,9 +151,8 @@ class Crossword {
                 continue;
             }
 
-            // If no intersection at this point, check for parallel words
+            // Check for parallel words space
             if (!hasIntersection) {
-                // Check cells left and right for parallel words
                 if (x > 0 && this.board[startY + i][x-1]?.letter) return false;
                 if (x < this.size-1 && this.board[startY + i][x+1]?.letter) return false;
             }
@@ -281,7 +273,6 @@ class Crossword {
             });
 
             input.addEventListener("keydown", (e) => {
-                // Handle arrow key navigation
                 if (e.key.startsWith("Arrow")) {
                     e.preventDefault();
                     const x = parseInt(e.target.dataset.x);
@@ -314,7 +305,7 @@ class Crossword {
                     return;
                 }
 
-                // Prevent any deletion if the cell is correct
+                // Prevent any deletion if cell is correct
                 if (e.target.parentElement.classList.contains('correct') && (e.key === "Backspace" || e.key === "Delete")) {
                     e.preventDefault();
                     return;
@@ -342,15 +333,12 @@ class Crossword {
         const x = parseInt(currentInput.dataset.x);
         const y = parseInt(currentInput.dataset.y);
         
-        // Try to move in the current direction first
         if (this.direction === 'vertical') {
-            // Look for next cell below
             const nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y + 1}"]`);
             if (nextInput && !nextInput.parentElement.classList.contains('correct')) {
                 return nextInput;
             }
         } else {
-            // Default to horizontal or when no direction is set
             const nextInput = this.gameBoard.querySelector(`input[data-x="${x + 1}"][data-y="${y}"]`);
             if (nextInput && !nextInput.parentElement.classList.contains('correct')) {
                 return nextInput;
@@ -372,15 +360,12 @@ class Crossword {
         const x = parseInt(currentInput.dataset.x);
         const y = parseInt(currentInput.dataset.y);
         
-        // Try to move in the current direction first
         if (this.direction === 'vertical') {
-            // Look for previous cell above
             const prevInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y - 1}"]`);
             if (prevInput && !prevInput.parentElement.classList.contains('correct')) {
                 return prevInput;
             }
         } else {
-            // Default to horizontal or when no direction is set
             const prevInput = this.gameBoard.querySelector(`input[data-x="${x - 1}"][data-y="${y}"]`);
             if (prevInput && !prevInput.parentElement.classList.contains('correct')) {
                 return prevInput;
@@ -462,12 +447,9 @@ class Crossword {
             }
         });
 
-        // Mark cells as correct if they are part of any completed word
         if (anyWordComplete) {
-            // Check all placed words to mark completed cells
             this.placedWords.forEach(placed => {
                 if (this.foundWords.has(this.words.find(w => w.english.toUpperCase() === placed.word).french)) {
-                    // Mark all cells in this completed word
                     if (placed.direction === 'horizontal') {
                         for (let i = 0; i < placed.word.length; i++) {
                             const input = this.gameBoard.querySelector(`input[data-x="${placed.x + i}"][data-y="${placed.y}"]`);
@@ -487,7 +469,6 @@ class Crossword {
             });
         }
 
-        // Check for win condition
         if (this.foundWords.size === this.words.length) {
             this.handleGameOver();
         }
@@ -532,5 +513,4 @@ class Crossword {
     }
 }
 
-// Start the game
 new Crossword(15, 8);

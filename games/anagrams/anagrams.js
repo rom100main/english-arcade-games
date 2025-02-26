@@ -24,16 +24,12 @@ class Anagrams {
     }
 
     init() {
-        // Select random words
         this.words = this.getRandomWords(this.nbWords);
         
-        // Create the game board UI
         this.createBoard();
         
-        // Create word list UI
         this.createWordList();
 
-        // Create new anagram
         this.createNewAnagram();
     }
 
@@ -55,15 +51,12 @@ class Anagrams {
     }
 
     createBoard() {
-        // Clear existing content
         this.gameBoard.innerHTML = '';
 
-        // Create anagram container
         const anagramContainer = document.createElement("div");
         anagramContainer.className = "anagram-container";
         this.gameBoard.appendChild(anagramContainer);
 
-        // Create input area
         const inputArea = document.createElement("div");
         inputArea.className = "input-area";
 
@@ -81,13 +74,11 @@ class Anagrams {
         inputArea.appendChild(submitButton);
         this.gameBoard.appendChild(inputArea);
 
-        // Add hint text
         const hint = document.createElement("div");
         hint.className = "hint";
         hint.textContent = "Click tiles to rearrange letters or type directly in the input box";
         this.gameBoard.appendChild(hint);
 
-        // Event listeners
         submitButton.addEventListener("click", () => this.checkAnswer());
         wordInput.addEventListener("keypress", (e) => {
             if (e.key === "Enter") {
@@ -107,7 +98,6 @@ class Anagrams {
     }
 
     createNewAnagram() {
-        // Find a word that hasn't been solved yet
         const remainingWords = this.words.filter(word => 
             !this.foundWords.has(word.french)
         );
@@ -117,7 +107,7 @@ class Anagrams {
             return;
         }
 
-        // Select a random word from remaining words
+        // Next words
         const word = remainingWords[Math.floor(Math.random() * remainingWords.length)];
         this.currentScrambled = {
             original: word.english.toUpperCase(),
@@ -125,7 +115,6 @@ class Anagrams {
             scrambled: this.scrambleWord(word.english.toUpperCase())
         };
 
-        // Update anagram container
         const anagramContainer = this.gameBoard.querySelector(".anagram-container");
         anagramContainer.innerHTML = "";
 
@@ -136,13 +125,11 @@ class Anagrams {
             anagramContainer.appendChild(tile);
         });
 
-        // Clear input
         const wordInput = document.getElementById("word-input");
         if (wordInput) {
             wordInput.value = "";
         }
 
-        // Setup tile click handlers
         this.setupTileHandlers();
     }
 
@@ -160,13 +147,11 @@ class Anagrams {
                     selectedTiles.push(tile);
 
                     if (selectedTiles.length === 2) {
-                        // Swap tiles
                         const [tile1, tile2] = selectedTiles;
                         const temp = tile1.textContent;
                         tile1.textContent = tile2.textContent;
                         tile2.textContent = temp;
 
-                        // Clear selection
                         tile1.classList.remove("selected");
                         tile2.classList.remove("selected");
                         selectedTiles = [];
@@ -183,11 +168,9 @@ class Anagrams {
         if (answer === this.currentScrambled.original) {
             this.foundWords.add(this.currentScrambled.french);
             
-            // Update UI
             document.querySelector(`.word-item[data-word="${this.currentScrambled.french}"]`)
                 .classList.add("found");
 
-            // Create new anagram
             this.createNewAnagram();
         } else {
             wordInput.classList.add("shake");
@@ -234,5 +217,4 @@ class Anagrams {
     }
 }
 
-// Start the game
 new Anagrams(8);

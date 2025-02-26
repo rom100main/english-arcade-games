@@ -210,5 +210,4 @@ class MemoryGame {
     }
 }
 
-// Create a 4x4 game board
 new MemoryGame(4, 4);
