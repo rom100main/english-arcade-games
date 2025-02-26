@@ -1,0 +1,147 @@
+.game-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.info-container {
+    flex: 1;
+
+    h2 {
+        margin-top: 0;
+        color: var(--grey);
+    }
+}
+
+.score-container {
+    text-align: right;
+    font-size: 1.2em;
+    color: var(--grey);
+}
+
+.time, .score, .best-score {
+    margin: 5px 0;
+}
+
+#timer, #word-count, #best-score {
+    font-weight: bold;
+    color: var(--grey);
+}
+
+.timer-container {
+    text-align: center;
+    font-size: 1.2em;
+    color: var(--grey);
+    margin-bottom: 10px;
+}
+
+#game-board {
+    background: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+#pyramid-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+    padding: 10px;
+    height: 300px;
+    max-height: 300px;
+}
+
+.pyramid-word {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    margin-bottom: 10px;
+    animation: addWord 0.3s ease-out;
+}
+
+@keyframes addWord {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.letter-cell {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    font-size: 1.2em;
+    font-weight: bold;
+    user-select: none;
+    border-radius: 4px;
+    box-shadow: var(--shadow-item);
+    transition: all 0.3s ease;
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+#word-input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1.1em;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+        border-color: var(--orange);
+        outline: none;
+    }
+}
+
+#submit-btn {
+    padding: 10px 20px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#submit-btn:hover {
+    background: var(--orange-dark);
+}
+
+.invalid {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}

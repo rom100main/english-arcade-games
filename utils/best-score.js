@@ -28,7 +28,7 @@ const BestScore = {
     /**
      * Get the best score for a specific game
      * @param {string} game - The game identifier (e.g., 'crossword', 'anagrams', etc.)
-     * @returns {number} The best score or Infinity if no score exists
+     * @returns {number} The best score or null if no score exists
      */
     getBestScore(game) {
         const cookieName = "rom100main.english-game";
@@ -41,9 +41,9 @@ const BestScore = {
                 const data = JSON.parse(cookieValue.split("=")[1]);
                 return data[game] || Infinity;
             } catch {
-                return Infinity;
+                return null;
             }
         }
-        return Infinity;
+        return null;
     }
 };

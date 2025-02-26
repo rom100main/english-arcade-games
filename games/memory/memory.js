@@ -21,7 +21,7 @@ class MemoryGame {
     updateBestScoreDisplay() {
         const bestScoreElement = document.getElementById('best-score');
         if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestScore === Infinity ? '-' : this.bestScore;
+            bestScoreElement.textContent = this.bestScore === null ? '-' : this.bestScore;
         }
     }
 
@@ -49,7 +49,8 @@ class MemoryGame {
     }
 
     showWinPopup() {
-        const isNewBestScore = this.attempts < this.bestScore;
+        const isNewBestScore = this.bestScore === null || this.attempts < this.bestScore;
+
         if (isNewBestScore) {
             BestScore.setBestScore('memory', this.attempts);
             this.bestScore = this.attempts;

@@ -19,7 +19,7 @@ class Anagrams {
     updateBestScoreDisplay() {
         const bestScoreElement = document.getElementById("best-score");
         if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestTime === Infinity ? "-" : this.timer.formatTime(this.bestTime);
+            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
         }
     }
 
@@ -197,7 +197,7 @@ class Anagrams {
 
     handleWin() {
         const finalTime = this.timer.stop();
-        const isNewBestTime = finalTime < this.bestTime;
+        const isNewBestTime = this.bestTime === null || finalTime < this.bestTime;
         
         if (isNewBestTime) {
             BestScore.setBestScore('anagrams', finalTime);
