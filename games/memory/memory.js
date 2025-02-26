@@ -61,51 +61,20 @@ class MemoryGame {
         }, 300); // card flip animation duration
     }
 
+    shuffle(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
     updateBestScoreDisplay() {
         const bestScoreElement = document.getElementById('best-score');
         if (bestScoreElement) {
             bestScoreElement.textContent = this.bestScore === null ? '-' : this.bestScore;
         }
-    }
-
-    handleGameOver() {
-        const isNewBestScore = this.bestScore === null || this.attempts < this.bestScore;
-
-        if (isNewBestScore) {
-            BestScore.setBestScore('memory', this.attempts);
-            this.bestScore = this.attempts;
-            this.updateBestScoreDisplay();
-            window.confetti.start();
-        }
-
-        this.popup = new Popup();
-
-        const content = `
-            <h2>Congratulations!</h2>
-            <p>You completed the game in <span id="final-attempts">${this.attempts}</span> attempts!</p>
-            <p class="best-score-text" style="color: ${isNewBestScore ? '#27ae60' : '#666'}">
-                ${isNewBestScore ? '🎉 New Best Score! 🎉' : `Best Score: ${this.bestScore}`}
-            </p>
-            <button class="retry-button">Play Again</button>
-        `;
-
-        this.popup
-            .setContent(content)
-            .onHide(() => {
-                window.confetti.hide();
-                setTimeout(() => {
-                    this.reset();
-                    this.popup.destroy();
-                    this.popup = null;
-                }, 300);
-            });
-
-        const retryButton = this.popup.popup.querySelector('.retry-button');
-        retryButton.addEventListener('click', () => {
-            this.popup.hide();
-        });
-
-        this.popup.show();
     }
 
     createCard(card, index) {
@@ -195,13 +164,44 @@ class MemoryGame {
         }, 1000);
     }
 
-    shuffle(array) {
-        const shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    handleGameOver() {
+        const isNewBestScore = this.bestScore === null || this.attempts < this.bestScore;
+
+        if (isNewBestScore) {
+            BestScore.setBestScore('memory', this.attempts);
+            this.bestScore = this.attempts;
+            this.updateBestScoreDisplay();
+            window.confetti.start();
         }
-        return shuffled;
+
+        this.popup = new Popup();
+
+        const content = `
+            <h2>Congratulations!</h2>
+            <p>You completed the game in <span id="final-attempts">${this.attempts}</span> attempts!</p>
+            <p class="best-score-text" style="color: ${isNewBestScore ? '#27ae60' : '#666'}">
+                ${isNewBestScore ? '🎉 New Best Score! 🎉' : `Best Score: ${this.bestScore}`}
+            </p>
+            <button class="retry-button">Play Again</button>
+        `;
+
+        this.popup
+            .setContent(content)
+            .onHide(() => {
+                window.confetti.hide();
+                setTimeout(() => {
+                    this.reset();
+                    this.popup.destroy();
+                    this.popup = null;
+                }, 300);
+            });
+
+        const retryButton = this.popup.popup.querySelector('.retry-button');
+        retryButton.addEventListener('click', () => {
+            this.popup.hide();
+        });
+
+        this.popup.show();
     }
 }
 
