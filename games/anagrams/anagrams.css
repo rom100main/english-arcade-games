@@ -40,13 +40,13 @@
     transition: all 0.3s ease;
     cursor: default;
     box-shadow: var(--shadow-item);
-}
 
-.word-item.found {
-    background: var(--green);
-    color: white;
-    text-decoration: line-through;
-    transform: scale(0.95);
+    &.found {
+        background: var(--green);
+        color: white;
+        text-decoration: line-through;
+        transform: scale(0.95);
+    }
 }
 
 #game-board {
@@ -88,12 +88,12 @@
         transform: scale(1.05);
         background: #f8f8f8;
     }
-}
 
-.letter-tile.selected {
-    background: var(--orange);
-    color: white;
-    transform: scale(1.1);
+    &.selected {
+        background: var(--orange);
+        color: white;
+        transform: scale(1.1);
+    }
 }
 
 .input-area {

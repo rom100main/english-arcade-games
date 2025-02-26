@@ -122,18 +122,7 @@
 }
 
 #submit-btn {
-    padding: 10px 20px;
-    background: var(--orange);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-#submit-btn:hover {
-    background: var(--orange-dark);
+    margin-top: 0;
 }
 
 .invalid {
