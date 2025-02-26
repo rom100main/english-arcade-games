@@ -118,13 +118,9 @@ class WordSearch {
             const y = startY + i * direction[0];
             const x = startX + i * direction[1];
             
-            if (x < 0 || x >= this.size || y < 0 || y >= this.size) {
-                return false;
-            }
+            if (x < 0 || x >= this.size || y < 0 || y >= this.size) return false;
             
-            if (this.board[y][x] !== "" && this.board[y][x] !== wordArray[i]) {
-                return false;
-            }
+            if (this.board[y][x] !== "" && this.board[y][x] !== wordArray[i]) return false;
         }
         return true;
     }
@@ -162,9 +158,7 @@ class WordSearch {
             document.querySelector(`.word-item[data-word="${word.french}"]`)
                 .classList.add("found");
 
-            if (this.foundWords.size === this.words.length) {
-                this.handleGameOver();
-            }
+            if (this.foundWords.size === this.words.length) this.handleGameOver();
             
             return true;
         }

@@ -56,9 +56,7 @@ class Anagrams {
         });
 
         const wordInput = document.getElementById("word-input");
-        if (wordInput) {
-            wordInput.value = "";
-        }
+        if (wordInput) wordInput.value = "";
 
         this.setupTileHandlers();
     }
@@ -94,9 +92,7 @@ class Anagrams {
 
         submitButton.addEventListener("click", () => this.checkAnswer());
         wordInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                this.checkAnswer();
-            }
+            if (e.key === "Enter") this.checkAnswer();
         });
     }
 

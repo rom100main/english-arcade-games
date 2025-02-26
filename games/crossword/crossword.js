@@ -74,9 +74,7 @@ class Crossword {
                 }
 
                 e.target.value = e.target.value.toUpperCase();
-                if (e.target.value === e.target.dataset.correct) {
-                    this.checkWords();
-                }
+                if (e.target.value === e.target.dataset.correct) this.checkWords();
                 
                 if (e.target.value) {
                     const currentCell = e.target;
@@ -87,11 +85,8 @@ class Crossword {
                         const currentX = parseInt(currentCell.dataset.x);
                         const currentY = parseInt(currentCell.dataset.y);
                         
-                        if (currentX === lastX && currentY !== lastY) {
-                            this.direction = 'vertical';
-                        } else if (currentY === lastY && currentX !== lastX) {
-                            this.direction = 'horizontal';
-                        }
+                        if (currentX === lastX && currentY !== lastY) this.direction = 'vertical';
+                        else if (currentY === lastY && currentX !== lastX) this.direction = 'horizontal';
                     }
                     this.lastInput = currentCell;
                     

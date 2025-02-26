@@ -127,11 +127,8 @@ class MemoryGame {
             ((first.card.type === 'french' && this.findMatchingPair(first.card.text, 'french') === second.card.text) ||
              (first.card.type === 'english' && this.findMatchingPair(first.card.text, 'english') === second.card.text));
 
-        if (isMatch) {
-            this.handleMatch();
-        } else {
-            this.handleMismatch();
-        }
+        if (isMatch) this.handleMatch();
+        else this.handleMismatch();
     }
 
     findMatchingPair(text, type) {
