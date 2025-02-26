@@ -3,6 +3,7 @@ class WordPyramid {
         this.words = [];
         this.input = document.getElementById("word-input");
         this.submitBtn = document.getElementById("submit-btn");
+        this.giveUpBtn = document.getElementById("give-up-btn");
         this.pyramidContainer = document.getElementById("pyramid-container");
         this.wordCount = document.getElementById("word-count");
         this.bestScore = BestScore.getBestScore('pyramid');
@@ -79,10 +80,9 @@ class WordPyramid {
     // Events
     setupEventListeners() {
         this.submitBtn.addEventListener("click", () => this.handleSubmit());
+        this.giveUpBtn.addEventListener("click", () => { this.timer.stop(); this.handleGameOver() });
         this.input.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                this.handleSubmit();
-            }
+            if (e.key === "Enter") this.handleSubmit();
         });
     }
 

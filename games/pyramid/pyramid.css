@@ -125,6 +125,15 @@
     margin-top: 0;
 }
 
+#give-up-btn {
+    margin-top: 0;
+    background-color: var(--red);
+    
+    &:hover {
+        background-color: var(--red-light);
+    }
+}
+
 .invalid {
     animation: shake 0.5s ease-in-out;
 }
