@@ -17,24 +17,37 @@ class MemoryGame {
         this.updateBestScoreDisplay();
     }
 
+    init(rows = 4, cols = 5) {
+        this.rows = rows;
+        this.cols = cols;
 
-    updateBestScoreDisplay() {
-        const bestScoreElement = document.getElementById('best-score');
-        if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestScore === null ? '-' : this.bestScore;
-        }
+        this.gameBoard.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
+
+        // Calculate number of pairs needed
+        const totalCells = this.rows * this.cols;
+        const numPairs = Math.floor(totalCells / 2);
+        const selectedWords = words.slice(0, numPairs);
+
+        const cardPairs = selectedWords.map(word => [
+            { text: word.french, type: 'french' },
+            { text: word.english, type: 'english' }
+        ]).flat();
+        this.cards = this.shuffle(cardPairs);
+        
+        this.cards.forEach((card, index) => {
+            const cardElement = this.createCard(card, index);
+            this.gameBoard.appendChild(cardElement);
+        });
     }
 
-    resetGame() {
+    reset() {
         this.isLocked = true;
         
-        // Flip all cards face down
         const cards = document.querySelectorAll('.card');
         cards.forEach(card => {
             card.classList.remove('flipped', 'matched');
         });
 
-        // Wait for flip animation to complete
         setTimeout(() => {
             this.gameBoard.innerHTML = '';
             this.cards = [];
@@ -45,10 +58,17 @@ class MemoryGame {
             this.pairsDisplay.textContent = '0';
             this.attemptsDisplay.textContent = '0';
             this.init();
-        }, 300); // Match card flip animation duration
+        }, 300); // card flip animation duration
     }
 
-    showWinPopup() {
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById('best-score');
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestScore === null ? '-' : this.bestScore;
+        }
+    }
+
+    handleGameOver() {
         const isNewBestScore = this.bestScore === null || this.attempts < this.bestScore;
 
         if (isNewBestScore) {
@@ -77,7 +97,7 @@ class MemoryGame {
             .onHide(() => {
                 window.confetti.hide();
                 setTimeout(() => {
-                    this.resetGame();
+                    this.reset();
                     this.popup.destroy();
                     this.popup = null;
                 }, 300);
@@ -91,31 +111,6 @@ class MemoryGame {
 
         // Show popup
         this.popup.show();
-    }
-
-    init() {
-        // Update grid layout
-        this.gameBoard.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
-
-        // Calculate number of pairs needed
-        const totalCells = this.rows * this.cols;
-        const numPairs = Math.floor(totalCells / 2);
-
-        // Take only the required number of word pairs
-        const selectedWords = words.slice(0, numPairs);
-        const cardPairs = selectedWords.map(word => [
-            { text: word.french, type: 'french' },
-            { text: word.english, type: 'english' }
-        ]).flat();
-
-        // Shuffle the cards
-        this.cards = this.shuffle(cardPairs);
-        
-        // Create and add cards to the board
-        this.cards.forEach((card, index) => {
-            const cardElement = this.createCard(card, index);
-            this.gameBoard.appendChild(cardElement);
-        });
     }
 
     createCard(card, index) {
@@ -189,7 +184,7 @@ class MemoryGame {
 
         if (this.matchedPairs === Math.floor(this.rows * this.cols / 2)) {
             setTimeout(() => {
-                this.showWinPopup();
+                this.handleGameOver();
             }, 500);
         }
     }
