@@ -238,7 +238,6 @@ class Crossword {
     canPlaceWordHorizontally(word, startX, y) {
         if (startX < 0 || startX + word.length > this.size) return false;
         
-        // Check if space is available and look for intersections
         for (let i = 0; i < word.length; i++) {
             const cell = this.board[y][startX + i];
             if (cell && cell.letter) {
