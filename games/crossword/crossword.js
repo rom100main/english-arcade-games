@@ -503,4 +503,4 @@ class Crossword {
     }
 }
 
-new Crossword(15, 8);
+new Crossword(20, 8);
