@@ -237,26 +237,19 @@ class Crossword {
 
     canPlaceWordHorizontally(word, startX, y) {
         if (startX < 0 || startX + word.length > this.size) return false;
-
-        let hasIntersection = false;
         
         // Check if space is available and look for intersections
         for (let i = 0; i < word.length; i++) {
             const cell = this.board[y][startX + i];
             if (cell && cell.letter) {
                 if (cell.letter !== word[i]) return false;
-                hasIntersection = true;
                 continue;
             }
 
-            // Check for parallel words space
-            if (!hasIntersection) {
-                if (y > 0 && this.board[y-1][startX + i]?.letter) return false;
-                if (y < this.size-1 && this.board[y+1][startX + i]?.letter) return false;
-            }
+            if (y > 0 && this.board[y-1][startX + i]?.letter) return false;
+            if (y < this.size-1 && this.board[y+1][startX + i]?.letter) return false;
         }
 
-        // Check left and right ends for touching words
         if (startX > 0 && this.board[y][startX - 1]?.letter) return false;
         if (startX + word.length < this.size && this.board[y][startX + word.length]?.letter) return false;
 
@@ -265,26 +258,18 @@ class Crossword {
 
     canPlaceWordVertically(word, x, startY) {
         if (startY < 0 || startY + word.length > this.size) return false;
-
-        let hasIntersection = false;
         
-        // Check if space is available and look for intersections
         for (let i = 0; i < word.length; i++) {
             const cell = this.board[startY + i]?.[x];
             if (cell && cell.letter) {
                 if (cell.letter !== word[i]) return false;
-                hasIntersection = true;
                 continue;
             }
 
-            // Check for parallel words space
-            if (!hasIntersection) {
-                if (x > 0 && this.board[startY + i][x-1]?.letter) return false;
-                if (x < this.size-1 && this.board[startY + i][x+1]?.letter) return false;
-            }
+            if (x > 0 && this.board[startY + i][x-1]?.letter) return false;
+            if (x < this.size-1 && this.board[startY + i][x+1]?.letter) return false;
         }
 
-        // Check top and bottom ends for touching words
         if (startY > 0 && this.board[startY - 1]?.[x]?.letter) return false;
         if (startY + word.length < this.size && this.board[startY + word.length]?.[x]?.letter) return false;
 
