@@ -114,7 +114,7 @@ class Anagrams {
         }
     }
 
-    // UI utils
+    // Utils
     scrambleWord(word) {
         const array = word.split('');
         for (let i = array.length - 1; i > 0; i--) {
