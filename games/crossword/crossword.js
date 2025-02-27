@@ -302,7 +302,7 @@ class Crossword {
                 ...cell,
                 letter: word[i],
                 isStart: i === 0 && !cell.isStart,
-                numbers: i === 0 ? [...(cell.numbers || []), number] : (cell.numbers || []),
+                numbers: i === 0 ? [number, ...(cell.numbers || [])] : (cell.numbers || []),
                 word: word
             };
         }
