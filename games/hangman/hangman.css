@@ -1,37 +1,119 @@
-div {
-    display: flex;
-    justify-content: center;
+.game-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
 }
-body {
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
 }
 
 .counter-field {
-    gap: 12px;
-    text-align: center;
-    font-size: 24px;
+    text-align: right;
+    font-size: 1.2em;
+    color: var(--grey);
 }
+
+#counter {
+    font-weight: bold;
+    color: var(--grey);
+}
+
 .input-field {
+    display: flex;
     align-items: center;
+    gap: 10px;
+    background: var(--bg-secondary);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
 }
+
 .input-field textarea {
-    height: 20px;
-    width: 20px;
-    font-size: 20px;
+    height: 40px;
+    width: 40px;
+    font-size: 1.2em;
     text-align: center;
     resize: none;
     overflow: hidden;
+    border-radius: 5px;
+    border: 1px solid var(--grey);
+    padding: 5px;
 }
+
+#guess_button {
+    padding: 8px 16px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-item);
+}
+
+#guess_button:hover {
+    transform: scale(1.05);
+}
+
+.guessed-field {
+    margin-top: 20px;
+}
+
 .letters-field {
-    margin-left: 30px;
-    gap: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
 }
+
+.letters-field p {
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border-radius: 5px;
+    box-shadow: var(--shadow-item);
+    color: var(--grey);
+}
+
 .word-field {
+    display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 10px;
+    margin: 30px 0;
+    background: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
 }
+
+.word-field p {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 5px;
+    box-shadow: var(--shadow-item);
+}
+
 .message {
     text-align: center;
-    font-size: 24px;
+    margin-top: 30px;
+    color: var(--grey);
+}
+
+.message a {
+    color: var(--blue);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.message a:hover {
+    text-decoration: underline;
 }

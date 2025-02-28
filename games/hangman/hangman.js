@@ -22,10 +22,13 @@ class hangman {
 
         // * * * * * WON * * * * *
         this.won_popup = new Popup();
-        let won_content = "<div>"
-        + "<p>Congratulation! You found the correct word.</p>"
-        + "<button class=\"retry-button\">Play again</button>"
-        + "</div>"
+        let won_content = `
+            <div class="popup-content">
+                <h2>Congratulations!</h2>
+                <p>You found the correct word.</p>
+                <button class="retry-button">Play again</button>
+            </div>
+        `;
         this.won_popup.onHide(() => {
             const canvas = window.confetti.canvas;
             if (canvas) {
@@ -44,10 +47,13 @@ class hangman {
 
         // * * * * * LOST * * * * *
         this.lost_popup = new Popup();
-        let lost_content = "<div>"
-        + "<p>Oh no, you have no tries left...</p>"
-        + "<button class=\"retry-button\">Play again</button>"
-        + "</div>"
+        let lost_content = `
+            <div class="popup-content">
+                <h2>Game Over</h2>
+                <p>Oh no, you have no tries left...</p>
+                <button class="retry-button">Play again</button>
+            </div>
+        `;
         this.lost_popup.setContent(lost_content);
         this.lost_popup.popup.querySelector('.retry-button').addEventListener('click', () => { this.lost_popup.hide() });
 
@@ -58,7 +64,7 @@ class hangman {
     }
 
     refreshCount() {
-        counter.textContent = this.left.toString();
+        this.counter.textContent = this.left.toString();
     }
 
     randomWord() {

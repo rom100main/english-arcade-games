@@ -14,25 +14,33 @@
     <script src="hangman.js" defer></script>
 </head>
 <body>
-    <div class="counter-field">
-        <p>Tries left</p>
-        <p id="counter"></p>
-    </div>
-    <div class="input-field">
-        <p>Enter your guess:</p>
-        <textarea id="guess_area"></textarea>
-        <button id="guess_button">Guess</button>
-    </div>
-    <div class="guessed-field">
-        <p>Letters you have already guessed:</p>
-        <div class="letters-field" id="guessed_field">
-            
+    <div class="game-container">
+        <div class="game-header">
+            <div class="info-container">
+                <h2>Hangman</h2>
+            </div>
+            <div class="counter-field">
+                <p>Tries left: <span id="counter"></span></p>
+            </div>
         </div>
-    </div>
-    <div id = "word_field" class="word-field"></div>
-    <div class="message">
-        <p>Tired of playing? Return to the hub and try a new game!</p>
-        <p><a href="index.html">Go back</a></p>
+
+        <div class="input-field">
+            <p>Enter your guess:</p>
+            <textarea id="guess_area" autocomplete="off" maxlength="1"></textarea>
+            <button id="guess_button">Guess</button>
+        </div>
+        
+        <div class="guessed-field">
+            <p>Letters you have already guessed:</p>
+            <div class="letters-field" id="guessed_field"></div>
+        </div>
+        
+        <div id="word_field" class="word-field"></div>
+        
+        <div class="message">
+            <p>Tired of playing? Return to the hub and try a new game!</p>
+            <p><a href="../../index.html">Go back</a></p>
+        </div>
     </div>
 </body>
 </html>
