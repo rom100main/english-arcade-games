@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Info -->
+        <title>Word Pyramid</title>
+        <!-- Styles -->
+        <link rel="stylesheet" href="../../style/main.css">
+        <link rel="stylesheet" href="../../utils/popup.css">
+        <link rel="stylesheet" href="pyramid.css">
+        <!-- Data -->
+        <script src="../../data/dictionary.js" defer></script>
+        <!-- Scripts -->
+        <script src="../../utils/popup.js" defer></script>
+        <script src="../../utils/confetti.js" defer></script>
+        <script src="../../utils/best-score.js" defer></script>
+        <script src="../../utils/timer.js" defer></script>
+        <script src="pyramid.js" defer></script>
+    </head>
+    <body>
+        <div class="game-container">
+            <div class="game-header">
+                <div class="info-container">
+                    <h2>Word Pyramid</h2>
+                </div>
+                <div class="score-container">
+                    <div class="score">Words: <span id="word-count">0</span></div>
+                    <div class="best-score">Best Score: <span id="best-score">-</span></div>
+                </div>
+            </div>
+            <div id="game-board">
+                <div class="timer-container">
+                    <div class="time">Time Left: <span id="timer">10</span>s</div>
+                </div>
+                <div id="pyramid-container"></div>
+                <div class="input-container">
+                    <input type="text" id="word-input" placeholder="Enter a word..." autocomplete="off">
+                    <button id="submit-btn" class="button">Submit</button>
+                    <button id="give-up-btn" class="button">Give Up</button>
+                </div>
+            </div>
+            <a href="../../index.html" class="button">Back to Main</a>
+        </div>
+    </body>
+</html>

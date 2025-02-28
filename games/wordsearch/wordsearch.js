@@ -7,83 +7,71 @@ class WordSearch {
         this.placedWords = [];
         this.selectedCells = [];
         this.foundWords = new Set();
-        this.startTime = null;
-        this.timerInterval = null;
-        this.bestTime = this.getBestScore();
+        this.bestTime = BestScore.getBestScore('wordsearch');
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
-        this.timerDisplay = document.getElementById("timer");
+        
+        this.timer = new Timer();
         
         this.init();
-        this.updateBestScoreDisplay();
-        this.startTimer();
-    }
-
-    setBestScore(score) {
-        const cookieName = "rom100main.english-game";
-        const cookieValue = JSON.stringify({ wordsearch: score });
-        const date = new Date();
-        date.setFullYear(date.getFullYear() + 1);
-        document.cookie = `${cookieName}=${cookieValue}; expires=${date.toUTCString()}; path=/`;
-        this.bestTime = score;
-    }
-
-    getBestScore() {
-        const cookieName = "rom100main.english-game";
-        const cookieValue = document.cookie
-            .split("; ")
-            .find(row => row.startsWith(cookieName+"="));
-        
-        if (cookieValue) {
-            try {
-                const data = JSON.parse(cookieValue.split("=")[1]);
-                return data.wordsearch || Infinity;
-            } catch {
-                return Infinity;
-            }
-        }
-        return Infinity;
-    }
-
-    updateBestScoreDisplay() {
-        const bestScoreElement = document.getElementById("best-score");
-        if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestTime === Infinity ? "-" : this.formatTime(this.bestTime);
-        }
     }
 
     init() {
-        // Initialize empty board
         this.board = Array(this.size).fill(null)
             .map(() => Array(this.size).fill(""));
         
-        // Select random words
-        this.words = this.getRandomWords(this.nbWords);
+        this.words = Random.getRandomWords(this.nbWords);
         
-        // Place words on board
         this.words.forEach(word => {
             this.placeWord(word.english);
         });
-        
-        // Fill empty spaces
         this.fillEmptySpaces();
         
-        // Create the game board UI
         this.createBoard();
-        
-        // Create word list UI
         this.createWordList();
         
-        // Setup event listeners
         this.setupEventListeners();
+
+        this.updateBestScoreDisplay();
+        this.timer.start();
     }
 
-    getRandomWords(count) {
-        const shuffled = [...words].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
+    // Create
+    createBoard() {
+        this.gameBoard.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
+        
+        this.board.forEach((row, y) => {
+            row.forEach((letter, x) => {
+                const cell = document.createElement("div");
+                cell.className = "cell";
+                cell.textContent = letter;
+                cell.dataset.x = x;
+                cell.dataset.y = y;
+                this.gameBoard.appendChild(cell);
+            });
+        });
     }
 
+    createWordList() {
+        this.words.forEach(({ french }) => {
+            const wordItem = document.createElement("div");
+            wordItem.className = "word-item";
+            wordItem.textContent = french;
+            wordItem.dataset.word = french;
+            this.wordList.appendChild(wordItem);
+        });
+    }
+
+    // Update
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById("best-score");
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
+        }
+    }
+
+    // Utils
     placeWord(word) {
         const directions = [
             [0, 1],   // horizontal
@@ -126,19 +114,13 @@ class WordSearch {
     }
 
     canPlaceWord(wordArray, startX, startY, direction) {
-        // Check if word fits on board
         for (let i = 0; i < wordArray.length; i++) {
             const y = startY + i * direction[0];
             const x = startX + i * direction[1];
             
-            if (x < 0 || x >= this.size || y < 0 || y >= this.size) {
-                return false;
-            }
+            if (x < 0 || x >= this.size || y < 0 || y >= this.size) return false;
             
-            // Check if space is empty or has matching letter
-            if (this.board[y][x] !== "" && this.board[y][x] !== wordArray[i]) {
-                return false;
-            }
+            if (this.board[y][x] !== "" && this.board[y][x] !== wordArray[i]) return false;
         }
         return true;
     }
@@ -154,31 +136,36 @@ class WordSearch {
         }
     }
 
-    createBoard() {
-        this.gameBoard.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
-        
-        this.board.forEach((row, y) => {
-            row.forEach((letter, x) => {
-                const cell = document.createElement("div");
-                cell.className = "cell";
-                cell.textContent = letter;
-                cell.dataset.x = x;
-                cell.dataset.y = y;
-                this.gameBoard.appendChild(cell);
+    getSelectedWord() {
+        return this.selectedCells
+            .map(cell => this.board[cell.y][cell.x])
+            .join("");
+    }
+
+    checkWord(selectedWord) {
+        const word = this.words.find(w => 
+            w.english.replace(/\s/g, "").toUpperCase() === selectedWord
+        );
+
+        if (word && !this.foundWords.has(word.french)) {
+            this.foundWords.add(word.french);
+            
+            this.selectedCells.forEach(cell => {
+                cell.element.classList.remove("selected");
+                cell.element.classList.add("found");
             });
-        });
+            
+            document.querySelector(`.word-item[data-word="${word.french}"]`)
+                .classList.add("found");
+
+            if (this.foundWords.size === this.words.length) this.handleGameOver();
+            
+            return true;
+        }
+        return false;
     }
 
-    createWordList() {
-        this.words.forEach(({ french }) => {
-            const wordItem = document.createElement("div");
-            wordItem.className = "word-item";
-            wordItem.textContent = french;
-            wordItem.dataset.word = french;
-            this.wordList.appendChild(wordItem);
-        });
-    }
-
+    // Events
     setupEventListeners() {
         let isSelecting = false;
         let startCell = null;
@@ -193,7 +180,6 @@ class WordSearch {
             const y = parseInt(cell.dataset.y);
             
             if (startCell) {
-                // Clear previous selection
                 document.querySelectorAll(".cell.selected").forEach(cell => {
                     cell.classList.remove("selected");
                 });
@@ -251,60 +237,14 @@ class WordSearch {
         });
     }
 
-    getSelectedWord() {
-        return this.selectedCells
-            .map(cell => this.board[cell.y][cell.x])
-            .join("");
-    }
-
-    checkWord(selectedWord) {
-        const word = this.words.find(w => 
-            w.english.replace(/\s/g, "").toUpperCase() === selectedWord
-        );
-
-        if (word && !this.foundWords.has(word.french)) {
-            this.foundWords.add(word.french);
-            
-            // Update UI
-            this.selectedCells.forEach(cell => {
-                cell.element.classList.remove("selected");
-                cell.element.classList.add("found");
-            });
-            
-            document.querySelector(`.word-item[data-word="${word.french}"]`)
-                .classList.add("found");
-
-            if (this.foundWords.size === this.words.length) {
-                this.handleWin();
-            }
-            
-            return true;
-        }
-        return false;
-    }
-
-    startTimer() {
-        this.startTime = Date.now();
-        this.timerInterval = setInterval(() => {
-            const elapsed = Date.now() - this.startTime;
-            this.timerDisplay.textContent = this.formatTime(elapsed);
-        }, 1000);
-    }
-
-    formatTime(ms) {
-        const seconds = Math.floor(ms / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
-    }
-
-    handleWin() {
-        clearInterval(this.timerInterval);
-        const finalTime = Date.now() - this.startTime;
-        const isNewBestTime = finalTime < this.bestTime;
+    // Handlers
+    handleGameOver() {
+        const finalTime = this.timer.stop();
+        const isNewBestTime = this.bestTime === null || finalTime < this.bestTime;
         
         if (isNewBestTime) {
-            this.setBestScore(finalTime);
+            BestScore.setBestScore('wordsearch', finalTime);
+            this.bestTime = finalTime;
             this.updateBestScoreDisplay();
             window.confetti.start();
         }
@@ -312,9 +252,9 @@ class WordSearch {
         const popup = new Popup();
         const content = `
             <h2>Congratulations!</h2>
-            <p>You completed the word search in <span>${this.formatTime(finalTime)}</span>!</p>
+            <p>You completed the word search in <span>${this.timer.formatTime(finalTime)}</span>!</p>
             <p class="best-score-text" style="color: ${isNewBestTime ? "#27ae60" : "#666"}">
-                ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.formatTime(this.bestTime)}`}
+                ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.timer.formatTime(this.bestTime)}`}
             </p>
             <button class="retry-button">Play Again</button>
         `;
@@ -322,17 +262,7 @@ class WordSearch {
         popup
             .setContent(content)
             .onHide(() => {
-                const canvas = window.confetti.canvas;
-                if (canvas) {
-                    canvas.style.transition = "opacity 0.3s ease-out";
-                    canvas.style.opacity = "0";
-                    setTimeout(() => {
-                        window.confetti.stop();
-                        canvas.style.opacity = "1";
-                        canvas.style.transition = "";
-                    }, 300);
-                }
-
+                window.confetti.hide();
                 setTimeout(() => {
                     location.reload();
                 }, 300);
@@ -347,5 +277,4 @@ class WordSearch {
     }
 }
 
-// Start the game
 new WordSearch(15, 8);

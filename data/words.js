@@ -1,4 +1,4 @@
-let words = [
+const words = [
     { french: "Bonjour", english: "Hello" },
     { french: "Au revoir", english: "Goodbye" },
     { french: "Merci", english: "Thank you" },

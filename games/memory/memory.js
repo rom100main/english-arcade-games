@@ -8,7 +8,7 @@ class MemoryGame {
         this.matchedPairs = 0;
         this.attempts = 0;
         this.isLocked = false;
-        this.bestScore = this.getBestScore();
+        this.bestScore = BestScore.getBestScore('memory');
         this.popup = null;
         this.rows = rows;
         this.cols = cols;
@@ -17,49 +17,37 @@ class MemoryGame {
         this.updateBestScoreDisplay();
     }
 
-    setBestScore(score) {
-        const cookieName = "rom100main.english-game";
-        const cookieValue = JSON.stringify({ memory: score });
-        const date = new Date();
-        date.setFullYear(date.getFullYear() + 1); // Cookie expires in 1 year
-        document.cookie = `${cookieName}=${cookieValue}; expires=${date.toUTCString()}; path=/`;
-        this.bestScore = score;
-    }
+    init(rows = 4, cols = 5) {
+        this.rows = rows;
+        this.cols = cols;
 
-    getBestScore() {
-        const cookieName = "rom100main.english-game";
-        const cookieValue = document.cookie
-            .split('; ')
-            .find(row => row.startsWith(cookieName+'='));
+        this.gameBoard.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
+
+        // Calculate number of pairs needed
+        const totalCells = this.rows * this.cols;
+        const numPairs = Math.floor(totalCells / 2);
+        const selectedWords = words.slice(0, numPairs);
+
+        const cardPairs = selectedWords.map(word => [
+            { text: word.french, type: 'french' },
+            { text: word.english, type: 'english' }
+        ]).flat();
+        this.cards = this.shuffle(cardPairs);
         
-        if (cookieValue) {
-            try {
-                const data = JSON.parse(cookieValue.split('=')[1]);
-                return data.memory || Infinity;
-            } catch {
-                return Infinity;
-            }
-        }
-        return Infinity;
+        this.cards.forEach((card, index) => {
+            const cardElement = this.createCard(card, index);
+            this.gameBoard.appendChild(cardElement);
+        });
     }
 
-    updateBestScoreDisplay() {
-        const bestScoreElement = document.getElementById('best-score');
-        if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestScore === Infinity ? '-' : this.bestScore;
-        }
-    }
-
-    resetGame() {
+    reset() {
         this.isLocked = true;
         
-        // Flip all cards face down
         const cards = document.querySelectorAll('.card');
         cards.forEach(card => {
             card.classList.remove('flipped', 'matched');
         });
 
-        // Wait for flip animation to complete
         setTimeout(() => {
             this.gameBoard.innerHTML = '';
             this.cards = [];
@@ -70,89 +58,10 @@ class MemoryGame {
             this.pairsDisplay.textContent = '0';
             this.attemptsDisplay.textContent = '0';
             this.init();
-        }, 300); // Match card flip animation duration
+        }, 300); // card flip animation duration
     }
 
-    showWinPopup() {
-        const isNewBestScore = this.attempts < this.bestScore;
-        if (isNewBestScore) {
-            this.setBestScore(this.attempts);
-            this.updateBestScoreDisplay();
-            window.confetti.start();
-        }
-
-        // Create new popup instance
-        this.popup = new Popup();
-
-        // Set popup content
-        const content = `
-            <h2>Congratulations!</h2>
-            <p>You completed the game in <span id="final-attempts">${this.attempts}</span> attempts!</p>
-            <p class="best-score-text" style="color: ${isNewBestScore ? '#27ae60' : '#666'}">
-                ${isNewBestScore ? '🎉 New Best Score! 🎉' : `Best Score: ${this.bestScore}`}
-            </p>
-            <button class="retry-button">Play Again</button>
-        `;
-
-        // Setup popup
-        this.popup
-            .setContent(content)
-            .onHide(() => {
-                // Fade out confetti
-                const canvas = window.confetti.canvas;
-                if (canvas) {
-                    canvas.style.transition = 'opacity 0.3s ease-out';
-                    canvas.style.opacity = '0';
-                    setTimeout(() => {
-                        window.confetti.stop();
-                        canvas.style.opacity = '1';
-                        canvas.style.transition = '';
-                    }, 300);
-                }
-
-                // Reset game after transition
-                setTimeout(() => {
-                    this.resetGame();
-                    this.popup.destroy();
-                    this.popup = null;
-                }, 300);
-            });
-
-        // Setup retry button
-        const retryButton = this.popup.popup.querySelector('.retry-button');
-        retryButton.addEventListener('click', () => {
-            this.popup.hide();
-        });
-
-        // Show popup
-        this.popup.show();
-    }
-
-    init() {
-        // Update grid layout
-        this.gameBoard.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
-
-        // Calculate number of pairs needed
-        const totalCells = this.rows * this.cols;
-        const numPairs = Math.floor(totalCells / 2);
-
-        // Take only the required number of word pairs
-        const selectedWords = words.slice(0, numPairs);
-        const cardPairs = selectedWords.map(word => [
-            { text: word.french, type: 'french' },
-            { text: word.english, type: 'english' }
-        ]).flat();
-
-        // Shuffle the cards
-        this.cards = this.shuffle(cardPairs);
-        
-        // Create and add cards to the board
-        this.cards.forEach((card, index) => {
-            const cardElement = this.createCard(card, index);
-            this.gameBoard.appendChild(cardElement);
-        });
-    }
-
+    // Create
     createCard(card, index) {
         const cardElement = document.createElement('div');
         cardElement.className = 'card';
@@ -173,6 +82,24 @@ class MemoryGame {
         return cardElement;
     }
 
+    // Update
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById('best-score');
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestScore === null ? '-' : this.bestScore;
+        }
+    }
+
+    // Utils
+    shuffle(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+    
     flipCard(cardElement, card) {
         if (
             this.isLocked || 
@@ -200,11 +127,8 @@ class MemoryGame {
             ((first.card.type === 'french' && this.findMatchingPair(first.card.text, 'french') === second.card.text) ||
              (first.card.type === 'english' && this.findMatchingPair(first.card.text, 'english') === second.card.text));
 
-        if (isMatch) {
-            this.handleMatch();
-        } else {
-            this.handleMismatch();
-        }
+        if (isMatch) this.handleMatch();
+        else this.handleMismatch();
     }
 
     findMatchingPair(text, type) {
@@ -214,6 +138,7 @@ class MemoryGame {
         return type === 'french' ? word.english : word.french;
     }
 
+    // Handlers
     handleMatch() {
         this.flippedCards.forEach(({ element }) => {
             element.classList.add('matched');
@@ -224,7 +149,7 @@ class MemoryGame {
 
         if (this.matchedPairs === Math.floor(this.rows * this.cols / 2)) {
             setTimeout(() => {
-                this.showWinPopup();
+                this.handleGameOver();
             }, 500);
         }
     }
@@ -240,15 +165,45 @@ class MemoryGame {
         }, 1000);
     }
 
-    shuffle(array) {
-        const shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    handleGameOver() {
+        const isNewBestScore = this.bestScore === null || this.attempts < this.bestScore;
+
+        if (isNewBestScore) {
+            BestScore.setBestScore('memory', this.attempts);
+            this.bestScore = this.attempts;
+            this.updateBestScoreDisplay();
+            window.confetti.start();
         }
-        return shuffled;
+
+        this.popup = new Popup();
+
+        const content = `
+            <h2>Congratulations!</h2>
+            <p>You completed the game in <span id="final-attempts">${this.attempts}</span> attempts!</p>
+            <p class="best-score-text" style="color: ${isNewBestScore ? '#27ae60' : '#666'}">
+                ${isNewBestScore ? '🎉 New Best Score! 🎉' : `Best Score: ${this.bestScore}`}
+            </p>
+            <button class="retry-button">Play Again</button>
+        `;
+
+        this.popup
+            .setContent(content)
+            .onHide(() => {
+                window.confetti.hide();
+                setTimeout(() => {
+                    this.reset();
+                    this.popup.destroy();
+                    this.popup = null;
+                }, 300);
+            });
+
+        const retryButton = this.popup.popup.querySelector('.retry-button');
+        retryButton.addEventListener('click', () => {
+            this.popup.hide();
+        });
+
+        this.popup.show();
     }
 }
 
-// Create a 4x4 game board
 new MemoryGame(4, 4);

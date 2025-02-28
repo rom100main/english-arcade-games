@@ -1,4 +1,4 @@
-let dialogs = {
+const dialogs = {
     "npc1": [
         {
             "text": "First dialog for npc 1",

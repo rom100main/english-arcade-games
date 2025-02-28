@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Info -->
+        <title>Anagrams</title>
+        <!-- Styles -->
+        <link rel="stylesheet" href="../../style/main.css">
+        <link rel="stylesheet" href="../../utils/popup.css">
+        <link rel="stylesheet" href="anagrams.css">
+        <!-- Data -->
+        <script src="../../data/words.js" defer></script>
+        <!-- Scripts -->
+        <script src="../../utils/random.js" defer></script>
+        <script src="../../utils/popup.js" defer></script>
+        <script src="../../utils/confetti.js" defer></script>
+        <script src="../../utils/best-score.js" defer></script>
+        <script src="../../utils/timer.js" defer></script>
+        <script src="anagrams.js" defer></script>
+    </head>
+    <body>
+        <div class="game-container">
+            <div class="game-header">
+                <div class="info-container">
+                    <h2>Anagrams</h2>
+                    <div id="word-list"></div>
+                </div>
+                <div class="score-container">
+                    <div class="time">Time: <span id="timer">00:00</span></div>
+                    <div class="best-score">Best Time: <span id="best-score">-</span></div>
+                </div>
+            </div>
+            <div id="game-board"></div>
+            <a href="../../index.html" class="button">Back to Main</a>
+        </div>
+    </body>
+</html>
