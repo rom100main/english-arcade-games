@@ -442,7 +442,7 @@ class Crossword {
             });
         }
 
-        if (this.foundWords.size === this.words.length) {
+        if (this.foundWords.size === this.placedWords.length) {
             this.handleGameOver();
         }
     }
@@ -487,4 +487,4 @@ class Crossword {
     }
 }
 
-new Crossword(20, 8);
+let test = new Crossword(20, 8);

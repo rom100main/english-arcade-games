@@ -1,3 +1,2 @@
 .DS_Store
-data/convert.py
-data/words_dictionary.json
+test/*
