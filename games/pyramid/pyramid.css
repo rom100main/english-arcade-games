@@ -16,14 +16,12 @@
 
     h2 {
         margin-top: 0;
-        color: var(--grey);
     }
 }
 
 .score-container {
     text-align: right;
     font-size: 1.2em;
-    color: var(--grey);
 }
 
 .time, .score, .best-score {
@@ -32,13 +30,11 @@
 
 #timer, #word-count, #best-score {
     font-weight: bold;
-    color: var(--grey);
 }
 
 .timer-container {
     text-align: center;
     font-size: 1.2em;
-    color: var(--grey);
     margin-bottom: 10px;
 }
 

@@ -22,7 +22,6 @@
 
     h2 {
         margin-top: 0;
-        color: var(--grey);
         flex-shrink: 1;
     }
 
@@ -59,7 +58,6 @@
 .score-container {
     text-align: right;
     font-size: 1.2em;
-    color: var(--grey);
 }
 
 #word-list {
@@ -132,5 +130,4 @@
 
 #timer, #best-score {
     font-weight: bold;
-    color: var(--grey);
 }

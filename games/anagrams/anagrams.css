@@ -16,7 +16,6 @@
 
     h2 {
         margin-top: 0;
-        color: var(--grey);
     }
 }
 
@@ -61,7 +60,6 @@
 .score-container {
     text-align: right;
     font-size: 1.2em;
-    color: var(--grey);
 }
 
 #word-list {
@@ -161,11 +159,9 @@
 
 #timer, #best-score {
     font-weight: bold;
-    color: var(--grey);
 }
 
 .hint {
-    color: var(--grey);
     font-style: italic;
     text-align: center;
     margin-top: 10px;
