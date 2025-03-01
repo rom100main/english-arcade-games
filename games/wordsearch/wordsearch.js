@@ -11,8 +11,16 @@ class WordSearch {
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
+        this.difficultySelect = document.getElementById("difficulty");
+        
+        this.difficulty = this.difficultySelect.value;
         
         this.timer = new Timer();
+
+        this.difficultySelect.addEventListener("change", () => {
+            this.difficulty = this.difficultySelect.value;
+            this.reset();
+        });
         
         this.init();
     }
@@ -21,7 +29,7 @@ class WordSearch {
         this.board = Array(this.size).fill(null)
             .map(() => Array(this.size).fill(""));
         
-        this.words = Random.getRandomWords(this.nbWords);
+        this.words = Random.getRandomWords(this.nbWords, this.difficulty);
         
         this.words.forEach(word => {
             this.placeWord(word.english);
@@ -47,7 +55,11 @@ class WordSearch {
         this.selectedCells = [];
         this.foundWords = new Set();
         
+        this.timer.stop();
+        this.timer.reset();
+        
         this.init();
+        this.timer.start();
     }
 
     // Create

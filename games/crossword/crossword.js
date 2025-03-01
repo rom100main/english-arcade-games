@@ -1,7 +1,7 @@
 class Crossword {
-    constructor(size = 15, nbWords = 8) {
+    constructor(size = 20, nbWords = 8) {
         this.size = size;
-        this.nbWords = Math.min(nbWords, words.length);
+        this.nbWords = nbWords;
         this.board = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
         this.words = [];
         this.placedWords = [];
@@ -12,8 +12,16 @@ class Crossword {
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
+        this.difficultySelect = document.getElementById("difficulty");
+
+        this.difficulty = this.difficultySelect.value;
         
         this.timer = new Timer();
+
+        this.difficultySelect.addEventListener("change", () => {
+            this.difficulty = this.difficultySelect.value;
+            this.reset();
+        });
         
         this.init();
         this.updateBestScoreDisplay();
@@ -21,7 +29,7 @@ class Crossword {
     }
 
     init() {
-        this.words = Random.getRandomWords(this.nbWords);
+        this.words = Random.getRandomWords(this.nbWords, this.difficulty);
         
         this.words.sort((a, b) => b.english.length - a.english.length); // for better placement
         
@@ -505,4 +513,4 @@ class Crossword {
     }
 }
 
-let game = new Crossword(20, 8);
+let game = new Crossword();

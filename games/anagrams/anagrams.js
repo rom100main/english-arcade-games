@@ -8,8 +8,16 @@ class Anagrams {
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
+        this.difficultySelect = document.getElementById("difficulty");
+
+        this.difficulty = this.difficultySelect.value;
         
         this.timer = new Timer();
+
+        this.difficultySelect.addEventListener("change", () => {
+            this.difficulty = this.difficultySelect.value;
+            this.reset();
+        });
         
         this.init();
         this.updateBestScoreDisplay();
@@ -17,7 +25,7 @@ class Anagrams {
     }
 
     init() {
-        this.words = Random.getRandomWords(this.nbWords);
+        this.words = Random.getRandomWords(this.nbWords, this.difficulty);
         
         this.createBoard();
         this.createWordList();
@@ -221,4 +229,4 @@ class Anagrams {
     }
 }
 
-let game = new Anagrams(8);
+let game = new Anagrams();
