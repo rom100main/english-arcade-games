@@ -6,10 +6,14 @@ class Timer {
         this.duration = options.duration;
         this.countdown = options.countdown || false;
         this.onTimeout = options.onTimeout;
+        this.isRunning = false;
     }
 
     start() {
+        if (this.isRunning) return;
+        
         this.startTime = Date.now();
+        this.isRunning = true;
         this.timerInterval = setInterval(() => {
             const elapsed = Date.now() - this.startTime;
             
@@ -28,16 +32,28 @@ class Timer {
     }
 
     stop() {
+        if (!this.isRunning) return 0;
+        
+        const elapsed = Date.now() - this.startTime;
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
-            return Date.now() - this.startTime;
+            this.timerInterval = null;
         }
-        return 0;
+        this.startTime = null;
+        this.isRunning = false;
+        return elapsed;
     }
 
     reset() {
         this.stop();
-        this.start();
+        this.startTime = null;
+        this.isRunning = false;
+        /*
+        this.timerDisplay.textContent = "00:00";
+        if (this.countdown) {
+            this.timerDisplay.textContent = this.duration;
+        }
+        */
     }
 
     formatTime(ms) {

@@ -27,8 +27,6 @@ class WordPyramid {
         this.updateWordCount();
         
         this.timer.reset();
-        this.timer.stop();
-        document.getElementById("timer").textContent = "10";
         this.input.focus();
     }
 
@@ -118,7 +116,7 @@ class WordPyramid {
     // Events
     setupEventListeners() {
         this.submitBtn.addEventListener("click", () => this.handleSubmit());
-        this.giveUpBtn.addEventListener("click", () => { this.timer.stop(); this.handleGameOver() });
+        this.giveUpBtn.addEventListener("click", () => this.handleGameOver());
         this.input.addEventListener("keypress", (e) => {
             if (e.key === "Enter") this.handleSubmit();
         });
@@ -142,6 +140,7 @@ class WordPyramid {
                 return;
             }
             this.timer.reset();
+            this.timer.start();
         } else {
             this.timer.start();
         }
@@ -153,6 +152,8 @@ class WordPyramid {
     }
 
     handleGameOver() {
+        this.timer.stop();
+
         const finalScore = this.words.length;
         const isNewBestScore = this.bestScore === null || finalScore > this.bestScore;
         
