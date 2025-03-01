@@ -38,18 +38,15 @@ class WordSearch {
     }
 
     reset() {
-        // Clear existing board and word list
         this.gameBoard.innerHTML = '';
         this.wordList.innerHTML = '';
         
-        // Reset game state
         this.board = [];
         this.words = [];
         this.placedWords = [];
         this.selectedCells = [];
         this.foundWords = new Set();
         
-        // Reinitialize game
         this.init();
     }
 
