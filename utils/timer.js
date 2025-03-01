@@ -48,12 +48,6 @@ class Timer {
         this.stop();
         this.startTime = null;
         this.isRunning = false;
-        /*
-        this.timerDisplay.textContent = "00:00";
-        if (this.countdown) {
-            this.timerDisplay.textContent = this.duration;
-        }
-        */
     }
 
     formatTime(ms) {
