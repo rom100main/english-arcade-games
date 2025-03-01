@@ -20,10 +20,21 @@ class Anagrams {
         this.words = Random.getRandomWords(this.nbWords);
         
         this.createBoard();
-        
         this.createWordList();
-
         this.createNewAnagram();
+    }
+
+    reset() {
+        this.words = [];
+        this.foundWords = new Set();
+        this.currentScrambled = null;
+        this.wordList.innerHTML = '';
+        
+        this.timer.stop();
+        this.timer.reset();
+        
+        this.init();
+        this.timer.start();
     }
 
     // Create
@@ -197,7 +208,7 @@ class Anagrams {
             .onHide(() => {
                 window.confetti.hide();
                 setTimeout(() => {
-                    location.reload();
+                    this.reset();
                 }, 300);
             });
 

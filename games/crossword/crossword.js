@@ -28,8 +28,26 @@ class Crossword {
         this.placeWords();
         
         this.createBoard();
-
         this.createWordList();
+    }
+
+    reset() {
+
+        this.board = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
+        this.words = [];
+        this.placedWords = [];
+        this.foundWords = new Set();
+        this.direction = null;
+        this.lastInput = null;
+
+        this.gameBoard.innerHTML = '';
+        this.wordList.innerHTML = '';
+
+        this.timer.stop();
+        this.timer.reset();
+        
+        this.init();
+        this.timer.start();
     }
 
     // Create
@@ -474,7 +492,7 @@ class Crossword {
             .onHide(() => {
                 window.confetti.hide();
                 setTimeout(() => {
-                    location.reload();
+                    this.reset();
                 }, 300);
             });
 
