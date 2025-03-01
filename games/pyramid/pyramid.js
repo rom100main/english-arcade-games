@@ -174,7 +174,7 @@ class WordPyramid {
                 <p class="best-score-text" style="color: ${isNewBestScore ? "#27ae60" : "#666"}">
                     ${isNewBestScore ? "🎉 New Best Score! 🎉" : `Best Score: ${this.bestScore === null ? "-" : this.bestScore} words`}
                 </p>
-                <button class="retry-button">Play Again</button>
+                <button class="button">Play Again</button>
             `;
             
             popup
@@ -186,7 +186,7 @@ class WordPyramid {
                     }, 300);
                 });
                 
-            const retryButton = popup.popup.querySelector(".retry-button");
+            const retryButton = popup.popup.querySelector(".button");
             retryButton.addEventListener("click", () => {
                 popup.hide();
             });

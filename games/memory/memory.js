@@ -192,7 +192,7 @@ class MemoryGame {
             <p class="best-score-text" style="color: ${isNewBestScore ? '#27ae60' : '#666'}">
                 ${isNewBestScore ? '🎉 New Best Score! 🎉' : `Best Score: ${this.bestScore}`}
             </p>
-            <button class="retry-button">Play Again</button>
+            <button class="button">Play Again</button>
         `;
 
         this.popup
@@ -206,7 +206,7 @@ class MemoryGame {
                 }, 300);
             });
 
-        const retryButton = this.popup.popup.querySelector('.retry-button');
+        const retryButton = this.popup.popup.querySelector('.button');
         retryButton.addEventListener('click', () => {
             this.popup.hide();
         });

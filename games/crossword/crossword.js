@@ -492,7 +492,7 @@ class Crossword {
             <p class="best-score-text" style="color: ${isNewBestTime ? "#27ae60" : "#666"}">
                 ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.timer.formatTime(this.bestTime)}`}
             </p>
-            <button class="retry-button">Play Again</button>
+            <button class="button">Play Again</button>
         `;
 
         popup
@@ -504,7 +504,7 @@ class Crossword {
                 }, 300);
             });
 
-        const retryButton = popup.popup.querySelector(".retry-button");
+        const retryButton = popup.popup.querySelector(".button");
         retryButton.addEventListener("click", () => {
             popup.hide();
         });
