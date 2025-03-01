@@ -206,4 +206,4 @@ class MemoryGame {
     }
 }
 
-new MemoryGame(4, 4);
+let game = new MemoryGame(4, 4);

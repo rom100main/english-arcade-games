@@ -301,4 +301,4 @@ class WordSearch {
     }
 }
 
-let test = new WordSearch(15, 8);
+let game = new WordSearch(15, 8);

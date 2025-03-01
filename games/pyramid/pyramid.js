@@ -19,6 +19,19 @@ class WordPyramid {
         this.updateWordCount();
     }
 
+    reset() {
+        this.words = [];
+        this.pyramidContainer.innerHTML = '';
+        this.input.value = '';
+
+        this.updateWordCount();
+        
+        this.timer.reset();
+        this.timer.stop();
+        document.getElementById("timer").textContent = "10";
+        this.input.focus();
+    }
+
     // Update
     updateWordCount() {
         this.wordCount.textContent = this.words.length;
@@ -77,6 +90,31 @@ class WordPyramid {
         this.pyramidContainer.scrollTop -= 60;
     }
 
+    collapsePyramid() {
+        const letters = this.pyramidContainer.querySelectorAll('.letter-cell');
+
+        letters.forEach((letter, index) => {
+            const delay = Math.random() * 500;
+            const randomX = (Math.random() - 0.5) * 100;
+            letter.style.setProperty('--random-x', `${randomX}px`);
+            
+            setTimeout(() => {
+                const clone = letter.cloneNode(true);
+                clone.style.left = letter.offsetLeft + 'px';
+                clone.style.top = letter.offsetTop + 'px';
+                clone.classList.add('falling');
+                letter.style.opacity = 0;
+                document.body.appendChild(clone);
+                
+                setTimeout(() => clone.remove(), 1500);
+            }, delay);
+        });
+
+        setTimeout(() => {
+            this.pyramidContainer.innerHTML = '';
+        }, 2000);
+    }
+
     // Events
     setupEventListeners() {
         this.submitBtn.addEventListener("click", () => this.handleSubmit());
@@ -118,6 +156,8 @@ class WordPyramid {
         const finalScore = this.words.length;
         const isNewBestScore = this.bestScore === null || finalScore > this.bestScore;
         
+        this.collapsePyramid();
+
         if (isNewBestScore) {
             BestScore.setBestScore('pyramid', finalScore);
             this.bestScore = finalScore;
@@ -125,32 +165,34 @@ class WordPyramid {
             window.confetti.start();
         }
 
-        const popup = new Popup();
-        const content = `
-            <h2>Congratulations!</h2>
-            <p>You created a pyramid with ${finalScore} words!</p>
-            <p class="best-score-text" style="color: ${isNewBestScore ? "#27ae60" : "#666"}">
-                ${isNewBestScore ? "🎉 New Best Score! 🎉" : `Best Score: ${this.bestScore === null ? "-" : this.bestScore} words`}
-            </p>
-            <button class="retry-button">Play Again</button>
-        `;
-        
-        popup
-            .setContent(content)
-            .onHide(() => {
-                window.confetti.hide();
-                setTimeout(() => {
-                    location.reload();
-                }, 300);
+        setTimeout(() => { // delay popup to allow animation to play
+            const popup = new Popup();
+            const content = `
+                <h2>Congratulations!</h2>
+                <p>You created a pyramid with ${finalScore} words!</p>
+                <p class="best-score-text" style="color: ${isNewBestScore ? "#27ae60" : "#666"}">
+                    ${isNewBestScore ? "🎉 New Best Score! 🎉" : `Best Score: ${this.bestScore === null ? "-" : this.bestScore} words`}
+                </p>
+                <button class="retry-button">Play Again</button>
+            `;
+            
+            popup
+                .setContent(content)
+                .onHide(() => {
+                    window.confetti.hide();
+                    setTimeout(() => {
+                        this.reset();
+                    }, 300);
+                });
+                
+            const retryButton = popup.popup.querySelector(".retry-button");
+            retryButton.addEventListener("click", () => {
+                popup.hide();
             });
             
-        const retryButton = popup.popup.querySelector(".retry-button");
-        retryButton.addEventListener("click", () => {
-            popup.hide();
-        });
-        
-        popup.show();
+            popup.show();
+        }, 1000);
     }
 }
 
-new WordPyramid();
+let game = new WordPyramid();

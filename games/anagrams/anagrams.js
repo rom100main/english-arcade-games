@@ -210,4 +210,4 @@ class Anagrams {
     }
 }
 
-new Anagrams(8);
+let game = new Anagrams(8);

@@ -487,4 +487,4 @@ class Crossword {
     }
 }
 
-let test = new Crossword(20, 8);
+let game = new Crossword(20, 8);
