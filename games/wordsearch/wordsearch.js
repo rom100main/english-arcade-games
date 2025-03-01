@@ -37,6 +37,22 @@ class WordSearch {
         this.timer.start();
     }
 
+    reset() {
+        // Clear existing board and word list
+        this.gameBoard.innerHTML = '';
+        this.wordList.innerHTML = '';
+        
+        // Reset game state
+        this.board = [];
+        this.words = [];
+        this.placedWords = [];
+        this.selectedCells = [];
+        this.foundWords = new Set();
+        
+        // Reinitialize game
+        this.init();
+    }
+
     // Create
     createBoard() {
         this.gameBoard.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
@@ -45,10 +61,21 @@ class WordSearch {
             row.forEach((letter, x) => {
                 const cell = document.createElement("div");
                 cell.className = "cell";
-                cell.textContent = letter;
+                cell.textContent = 'A';
                 cell.dataset.x = x;
                 cell.dataset.y = y;
                 this.gameBoard.appendChild(cell);
+
+                setTimeout(() => {
+                    let currentLetter = 'A';
+                    const targetLetter = letter;
+                    const interval = setInterval(() => {
+                        cell.textContent = currentLetter;
+                        if (currentLetter === targetLetter) clearInterval(interval);
+                        else if (currentLetter === 'Z' ) currentLetter = 'A';
+                        currentLetter = String.fromCharCode(currentLetter.charCodeAt(0) + 1);
+                    }, 50);
+                }, Math.random() * 500);
             });
         });
     }
@@ -264,7 +291,7 @@ class WordSearch {
             .onHide(() => {
                 window.confetti.hide();
                 setTimeout(() => {
-                    location.reload();
+                    this.reset();
                 }, 300);
             });
 
@@ -277,4 +304,4 @@ class WordSearch {
     }
 }
 
-new WordSearch(15, 8);
+let test = new WordSearch(15, 8);
