@@ -1,31 +1,5 @@
-.game-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.game-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
-}
-
-.info-container {
-    flex: 1;
-
-    h2 {
-        margin-top: 0;
-    }
-}
-
-.score-container {
-    text-align: right;
-    font-size: 1.2em;
-}
-
-.time, .score, .best-score {
-    margin: 5px 0;
+.info-container h2 {
+    margin-top: 0;
 }
 
 .timer-container {
