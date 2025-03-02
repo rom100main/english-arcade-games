@@ -122,7 +122,6 @@
 
     &:hover {
         transform: scale(1.05);
-        background: #f8f8f8;
     }
 
     &.selected {
@@ -155,10 +154,6 @@
 
 .time, .best-score {
     margin: 5px 0;
-}
-
-#timer, #best-score {
-    font-weight: bold;
 }
 
 .hint {

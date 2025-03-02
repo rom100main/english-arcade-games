@@ -28,10 +28,6 @@
     margin: 5px 0;
 }
 
-#timer, #word-count, #best-score {
-    font-weight: bold;
-}
-
 .timer-container {
     text-align: center;
     font-size: 1.2em;

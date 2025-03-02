@@ -10,6 +10,8 @@
     --btn: var(--grey);
     --btn-hover: var(--grey-light);
 
+    --text: var(--grey);
+
     --bg: white;
     --bg-secondary: #f0f0f0;
 
@@ -22,7 +24,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    color: var(--grey);
+    color: var(--text);
     background-color: var(--bg);
 }
 

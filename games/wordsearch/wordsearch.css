@@ -107,10 +107,6 @@
     transition: all 0.3s ease;
     border-radius: 4px;
 
-    &:hover {
-        background: #f8f8f8;
-    }
-
     &.selected {
         background: var(--orange);
         color: white;
@@ -126,8 +122,4 @@
 
 .time, .best-score {
     margin: 5px 0;
-}
-
-#timer, #best-score {
-    font-weight: bold;
 }

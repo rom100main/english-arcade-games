@@ -149,7 +149,3 @@
 .time, .best-score {
     margin: 5px 0;
 }
-
-#timer, #best-score {
-    font-weight: bold;
-}
