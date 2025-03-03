@@ -205,7 +205,7 @@ class Anagrams {
         const content = `
             <h2>Congratulations!</h2>
             <p>You completed all anagrams in <span>${this.timer.formatTime(finalTime)}</span>!</p>
-            <p class="best-score-text" style="color: ${isNewBestTime ? "#27ae60" : "#666"}">
+            <p class="best-score-text" style="color: ${isNewBestTime ? "var(--green)" : "" }">
                 ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.timer.formatTime(this.bestTime)}`}
             </p>
             <button class="button">Play Again</button>

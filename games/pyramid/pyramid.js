@@ -172,7 +172,7 @@ class WordPyramid {
             const content = `
                 <h2>Congratulations!</h2>
                 <p>You created a pyramid with ${finalScore} words!</p>
-                <p class="best-score-text" style="color: ${isNewBestScore ? "#27ae60" : "#666"}">
+                <p class="best-score-text" style="color: ${isNewBestScore ? "var(--green)" : "" }">
                     ${isNewBestScore ? "🎉 New Best Score! 🎉" : `Best Score: ${this.bestScore === null ? "-" : this.bestScore} words`}
                 </p>
                 <button class="button">Play Again</button>
