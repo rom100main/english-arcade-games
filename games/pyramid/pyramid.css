@@ -95,11 +95,6 @@
     border-radius: 5px;
     font-size: 1.1em;
     transition: border-color 0.3s ease;
-
-    &:focus {
-        border-color: var(--orange);
-        outline: none;
-    }
 }
 
 #submit-btn {
