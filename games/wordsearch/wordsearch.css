@@ -1,9 +1,10 @@
 #game-board {
     display: grid;
+    justify-content: center;
     gap: 2px;
-    background: var(--bg-secondary);
     padding: 15px;
     border-radius: 10px;
+    background: var(--bg-secondary);
     box-shadow: var(--shadow);
 }
 
