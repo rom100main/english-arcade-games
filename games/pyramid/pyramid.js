@@ -27,6 +27,7 @@ class WordPyramid {
         this.updateWordCount();
         
         this.timer.reset();
+        document.getElementById("timer").textContent = this.timer.duration;
         this.input.focus();
     }
 
