@@ -9,8 +9,7 @@
         <link rel="stylesheet" href="style/main.css">
         <link rel="stylesheet" href="style/index.css">
         <!-- Data -->
-        <script src="data/dialogs.js" defer></script>
-        <script src="data/arcades.js" defer></script>
+        <script src="data/games.js" defer></script>
         <!-- Scripts -->
         <script src="scripts/index.js" defer></script>
     </head>
@@ -21,38 +20,7 @@
                     <h1>English Games Channel</h1>
                     <div class="channel-subtitle">Select a game to play</div>
                 </div>
-                <div class="channel-grid">
-                    <a href="games/wordsearch/wordsearch.html" class="channel-item">
-                        <div class="channel-preview">
-                            <div class="channel-icon">W</div>
-                        </div>
-                        <div class="channel-label">Word Search</div>
-                    </a>
-                    <a href="games/memory/memory.html" class="channel-item">
-                        <div class="channel-preview">
-                            <div class="channel-icon">M</div>
-                        </div>
-                        <div class="channel-label">Memory</div>
-                    </a>
-                    <a href="games/crossword/crossword.html" class="channel-item">
-                        <div class="channel-preview">
-                            <div class="channel-icon">C</div>
-                        </div>
-                        <div class="channel-label">Crossword</div>
-                    </a>
-                    <a href="games/anagrams/anagrams.html" class="channel-item">
-                        <div class="channel-preview">
-                            <div class="channel-icon">A</div>
-                        </div>
-                        <div class="channel-label">Anagrams</div>
-                    </a>
-                    <a href="games/pyramid/pyramid.html" class="channel-item">
-                        <div class="channel-preview">
-                            <div class="channel-icon">P</div>
-                        </div>
-                        <div class="channel-label">Pyramid</div>
-                    </a>
-                </div>
+                <div class="channel-grid" id="channelGrid"></div>
             </div>
         </div>
     </body>
