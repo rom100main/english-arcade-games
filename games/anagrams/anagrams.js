@@ -8,8 +8,16 @@ class Anagrams {
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
+        this.difficultySelect = document.getElementById("difficulty");
+
+        this.difficulty = this.difficultySelect.value;
         
         this.timer = new Timer();
+
+        this.difficultySelect.addEventListener("change", () => {
+            this.difficulty = this.difficultySelect.value;
+            this.reset();
+        });
         
         this.init();
         this.updateBestScoreDisplay();
@@ -17,13 +25,24 @@ class Anagrams {
     }
 
     init() {
-        this.words = Random.getRandomWords(this.nbWords);
+        this.words = Random.getRandomWords(this.nbWords, this.difficulty);
         
         this.createBoard();
-        
         this.createWordList();
-
         this.createNewAnagram();
+    }
+
+    reset() {
+        this.words = [];
+        this.foundWords = new Set();
+        this.currentScrambled = null;
+        this.wordList.innerHTML = '';
+        
+        this.timer.stop();
+        this.timer.reset();
+        
+        this.init();
+        this.timer.start();
     }
 
     // Create
@@ -189,7 +208,7 @@ class Anagrams {
             <p class="best-score-text" style="color: ${isNewBestTime ? "#27ae60" : "#666"}">
                 ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.timer.formatTime(this.bestTime)}`}
             </p>
-            <button class="retry-button">Play Again</button>
+            <button class="button">Play Again</button>
         `;
 
         popup
@@ -197,11 +216,11 @@ class Anagrams {
             .onHide(() => {
                 window.confetti.hide();
                 setTimeout(() => {
-                    location.reload();
+                    this.reset();
                 }, 300);
             });
 
-        const retryButton = popup.popup.querySelector(".retry-button");
+        const retryButton = popup.popup.querySelector(".button");
         retryButton.addEventListener("click", () => {
             popup.hide();
         });
@@ -210,4 +229,4 @@ class Anagrams {
     }
 }
 
-new Anagrams(8);
+let game = new Anagrams();

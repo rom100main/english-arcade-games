@@ -1,8 +1,5 @@
 class MemoryGame {
     constructor(rows = 4, cols = 5) {
-        this.gameBoard = document.getElementById('game-board');
-        this.pairsDisplay = document.getElementById('pairs');
-        this.attemptsDisplay = document.getElementById('attempts');
         this.cards = [];
         this.flippedCards = [];
         this.matchedPairs = 0;
@@ -12,6 +9,18 @@ class MemoryGame {
         this.popup = null;
         this.rows = rows;
         this.cols = cols;
+
+        this.gameBoard = document.getElementById('game-board');
+        this.pairsDisplay = document.getElementById('pairs');
+        this.attemptsDisplay = document.getElementById('attempts');
+        this.difficultySelect = document.getElementById('difficulty');
+
+        this.difficulty = this.difficultySelect.value;
+
+        this.difficultySelect.addEventListener("change", () => {
+            this.difficulty = this.difficultySelect.value;
+            this.reset();
+        });
 
         this.init();
         this.updateBestScoreDisplay();
@@ -26,7 +35,7 @@ class MemoryGame {
         // Calculate number of pairs needed
         const totalCells = this.rows * this.cols;
         const numPairs = Math.floor(totalCells / 2);
-        const selectedWords = words.slice(0, numPairs);
+        const selectedWords = Random.getRandomWords(numPairs, this.difficulty);
 
         const cardPairs = selectedWords.map(word => [
             { text: word.french, type: 'french' },
@@ -132,7 +141,7 @@ class MemoryGame {
     }
 
     findMatchingPair(text, type) {
-        const word = words.find(w => 
+        const word = words[this.difficulty].find(w => 
             type === 'french' ? w.french === text : w.english === text
         );
         return type === 'french' ? word.english : word.french;
@@ -183,7 +192,7 @@ class MemoryGame {
             <p class="best-score-text" style="color: ${isNewBestScore ? '#27ae60' : '#666'}">
                 ${isNewBestScore ? '🎉 New Best Score! 🎉' : `Best Score: ${this.bestScore}`}
             </p>
-            <button class="retry-button">Play Again</button>
+            <button class="button">Play Again</button>
         `;
 
         this.popup
@@ -197,7 +206,7 @@ class MemoryGame {
                 }, 300);
             });
 
-        const retryButton = this.popup.popup.querySelector('.retry-button');
+        const retryButton = this.popup.popup.querySelector('.button');
         retryButton.addEventListener('click', () => {
             this.popup.hide();
         });
@@ -206,4 +215,4 @@ class MemoryGame {
     }
 }
 
-new MemoryGame(4, 4);
+let game = new MemoryGame();

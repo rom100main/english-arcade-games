@@ -11,8 +11,16 @@ class WordSearch {
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
+        this.difficultySelect = document.getElementById("difficulty");
+        
+        this.difficulty = this.difficultySelect.value;
         
         this.timer = new Timer();
+
+        this.difficultySelect.addEventListener("change", () => {
+            this.difficulty = this.difficultySelect.value;
+            this.reset();
+        });
         
         this.init();
     }
@@ -21,7 +29,7 @@ class WordSearch {
         this.board = Array(this.size).fill(null)
             .map(() => Array(this.size).fill(""));
         
-        this.words = Random.getRandomWords(this.nbWords);
+        this.words = Random.getRandomWords(this.nbWords, this.difficulty);
         
         this.words.forEach(word => {
             this.placeWord(word.english);
@@ -37,6 +45,23 @@ class WordSearch {
         this.timer.start();
     }
 
+    reset() {
+        this.gameBoard.innerHTML = '';
+        this.wordList.innerHTML = '';
+        
+        this.board = [];
+        this.words = [];
+        this.placedWords = [];
+        this.selectedCells = [];
+        this.foundWords = new Set();
+        
+        this.timer.stop();
+        this.timer.reset();
+        
+        this.init();
+        this.timer.start();
+    }
+
     // Create
     createBoard() {
         this.gameBoard.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
@@ -45,10 +70,21 @@ class WordSearch {
             row.forEach((letter, x) => {
                 const cell = document.createElement("div");
                 cell.className = "cell";
-                cell.textContent = letter;
+                cell.textContent = 'A';
                 cell.dataset.x = x;
                 cell.dataset.y = y;
                 this.gameBoard.appendChild(cell);
+
+                setTimeout(() => {
+                    let currentLetter = 'A';
+                    const targetLetter = letter;
+                    const interval = setInterval(() => {
+                        cell.textContent = currentLetter;
+                        if (currentLetter === targetLetter) clearInterval(interval);
+                        else if (currentLetter === 'Z' ) currentLetter = 'A';
+                        currentLetter = String.fromCharCode(currentLetter.charCodeAt(0) + 1);
+                    }, 50);
+                }, Math.random() * 500);
             });
         });
     }
@@ -256,7 +292,7 @@ class WordSearch {
             <p class="best-score-text" style="color: ${isNewBestTime ? "#27ae60" : "#666"}">
                 ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.timer.formatTime(this.bestTime)}`}
             </p>
-            <button class="retry-button">Play Again</button>
+            <button class="button">Play Again</button>
         `;
 
         popup
@@ -264,11 +300,11 @@ class WordSearch {
             .onHide(() => {
                 window.confetti.hide();
                 setTimeout(() => {
-                    location.reload();
+                    this.reset();
                 }, 300);
             });
 
-        const retryButton = popup.popup.querySelector(".retry-button");
+        const retryButton = popup.popup.querySelector(".button");
         retryButton.addEventListener("click", () => {
             popup.hide();
         });
@@ -277,4 +313,4 @@ class WordSearch {
     }
 }
 
-new WordSearch(15, 8);
+let game = new WordSearch(15, 8);

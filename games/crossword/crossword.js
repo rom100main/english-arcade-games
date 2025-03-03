@@ -1,7 +1,7 @@
 class Crossword {
-    constructor(size = 15, nbWords = 8) {
+    constructor(size = 20, nbWords = 8) {
         this.size = size;
-        this.nbWords = Math.min(nbWords, words.length);
+        this.nbWords = nbWords;
         this.board = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
         this.words = [];
         this.placedWords = [];
@@ -12,8 +12,16 @@ class Crossword {
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
+        this.difficultySelect = document.getElementById("difficulty");
+
+        this.difficulty = this.difficultySelect.value;
         
         this.timer = new Timer();
+
+        this.difficultySelect.addEventListener("change", () => {
+            this.difficulty = this.difficultySelect.value;
+            this.reset();
+        });
         
         this.init();
         this.updateBestScoreDisplay();
@@ -21,15 +29,33 @@ class Crossword {
     }
 
     init() {
-        this.words = Random.getRandomWords(this.nbWords);
+        this.words = Random.getRandomWords(this.nbWords, this.difficulty);
         
         this.words.sort((a, b) => b.english.length - a.english.length); // for better placement
         
         this.placeWords();
         
         this.createBoard();
-
         this.createWordList();
+    }
+
+    reset() {
+
+        this.board = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
+        this.words = [];
+        this.placedWords = [];
+        this.foundWords = new Set();
+        this.direction = null;
+        this.lastInput = null;
+
+        this.gameBoard.innerHTML = '';
+        this.wordList.innerHTML = '';
+
+        this.timer.stop();
+        this.timer.reset();
+        
+        this.init();
+        this.timer.start();
     }
 
     // Create
@@ -442,7 +468,7 @@ class Crossword {
             });
         }
 
-        if (this.foundWords.size === this.words.length) {
+        if (this.foundWords.size === this.placedWords.length) {
             this.handleGameOver();
         }
     }
@@ -466,7 +492,7 @@ class Crossword {
             <p class="best-score-text" style="color: ${isNewBestTime ? "#27ae60" : "#666"}">
                 ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.timer.formatTime(this.bestTime)}`}
             </p>
-            <button class="retry-button">Play Again</button>
+            <button class="button">Play Again</button>
         `;
 
         popup
@@ -474,11 +500,11 @@ class Crossword {
             .onHide(() => {
                 window.confetti.hide();
                 setTimeout(() => {
-                    location.reload();
+                    this.reset();
                 }, 300);
             });
 
-        const retryButton = popup.popup.querySelector(".retry-button");
+        const retryButton = popup.popup.querySelector(".button");
         retryButton.addEventListener("click", () => {
             popup.hide();
         });
@@ -487,4 +513,4 @@ class Crossword {
     }
 }
 
-new Crossword(20, 8);
+let game = new Crossword();

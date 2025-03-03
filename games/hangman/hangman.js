@@ -71,7 +71,7 @@ class hangman {
         var index = random(0, words.length - 1);
         this.word = words[index].english;
 
-        this.left = this.word.length + 10;
+        this.left = 10;
         console.log("Word: " + this.word);
 
         this.word_field.innerHTML = "";

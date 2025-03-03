@@ -4,34 +4,24 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- Info -->
-        <title>Game Website</title>
+        <title>English Games</title>
         <!-- Styles -->
         <link rel="stylesheet" href="style/main.css">
         <link rel="stylesheet" href="style/index.css">
         <!-- Data -->
-        <script src="data/dialogs.js" defer></script>
-        <script src="data/arcades.js" defer></script>
+        <script src="data/games.js" defer></script>
         <!-- Scripts -->
         <script src="scripts/index.js" defer></script>
     </head>
-
     <body>
-        <div id="field">
-            <div id="player"></div>
-            <div id="npc1" class="interactable npc"></div>
-            <div id="npc2" class="interactable npc"></div>
-            <div id="arcade1" class="interactable arcade"></div>
-            <div id="arcade2" class="interactable arcade"></div>
-            <div id="arcade3" class="interactable arcade"></div>
-        </div>
-        <div id="dialog" class="hidden">
-            <img id="npc-image" src="" alt="NPC">
-            <div id="dialog-bubble">
-                <div id="dialog-triangle-left"></div>
-                <p id="dialog-text">This is a dialog.</p>
-                <div id="dialog-triangle-right"></div>
+        <div class="game-container">
+            <div class="channel-menu">
+                <div class="channel-title">
+                    <h1>English Games Channel</h1>
+                    <div class="channel-subtitle">Select a game to play</div>
+                </div>
+                <div class="channel-grid" id="channelGrid"></div>
             </div>
-            <img id="player-image" src="images/playerDialog.png" alt="Player">
         </div>
     </body>
 </html>
