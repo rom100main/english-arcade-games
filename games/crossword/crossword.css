@@ -1,11 +1,17 @@
 #game-board {
-    display: grid;
-    justify-content: center;
-    gap: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 15px;
     border-radius: 10px;
     background: var(--bg-secondary);
     box-shadow: var(--shadow);
+}
+
+.grid-box {
+    display: grid;
+    justify-content: center;
+    gap: 2px;
 }
 
 .cell {

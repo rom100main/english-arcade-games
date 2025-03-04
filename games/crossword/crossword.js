@@ -9,6 +9,7 @@ class Crossword {
         this.bestTime = BestScore.getBestScore('crossword');
         this.direction = null; // 'horizontal' or 'vertical'
         this.lastInput = null; // track last input cell coordinates
+        this.revealedCells = new Set();
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
@@ -40,13 +41,13 @@ class Crossword {
     }
 
     reset() {
-
         this.board = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
         this.words = [];
         this.placedWords = [];
         this.foundWords = new Set();
         this.direction = null;
         this.lastInput = null;
+        this.revealedCells = new Set();
 
         this.gameBoard.innerHTML = '';
         this.wordList.innerHTML = '';
@@ -60,7 +61,22 @@ class Crossword {
 
     // Create
     createBoard() {
-        this.gameBoard.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
+        // Hint box
+        const hintBox = document.createElement("div");
+        hintBox.className = "hint-box";
+        for (let i = 0; i < 3; i++) {
+            const hintButton = document.createElement("div");
+            hintButton.className = "hint-button";
+            hintButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M9 20h6v2H9zm7.906-6.288C17.936 12.506 19 11.259 19 9c0-3.859-3.141-7-7-7S5 5.141 5 9c0 2.285 1.067 3.528 2.101 4.73.358.418.729.851 1.084 1.349.144.206.38.996.591 1.921H8v2h8v-2h-.774c.213-.927.45-1.719.593-1.925.352-.503.726-.94 1.087-1.363zm-2.724.213c-.434.617-.796 2.075-1.006 3.075h-2.351c-.209-1.002-.572-2.463-1.011-3.08a20.502 20.502 0 0 0-1.196-1.492C7.644 11.294 7 10.544 7 9c0-2.757 2.243-5 5-5s5 2.243 5 5c0 1.521-.643 2.274-1.615 3.413-.373.438-.796.933-1.203 1.512z"></path></svg>`;
+            hintButton.addEventListener('click', () => this.useHint(hintButton));
+            hintBox.appendChild(hintButton);
+        }
+        this.gameBoard.appendChild(hintBox);
+
+        // Grid box for the cells
+        const gridBox = document.createElement("div");
+        gridBox.className = "grid-box";
+        gridBox.style.gridTemplateColumns = `repeat(${this.size}, 40px)`;
         
         for (let y = 0; y < this.size; y++) {
             for (let x = 0; x < this.size; x++) {
@@ -86,12 +102,13 @@ class Crossword {
                     cell.classList.add("empty");
                 }
                 
-                this.gameBoard.appendChild(cell);
+                gridBox.appendChild(cell);
             }
         }
+        this.gameBoard.appendChild(gridBox);
 
         // Add input event listeners
-        this.gameBoard.querySelectorAll("input").forEach(input => {
+        gridBox.querySelectorAll("input").forEach(input => {
             input.addEventListener("input", (e) => {
                 // Prevent input if the cell is already correct
                 if (e.target.parentElement.classList.contains('correct')) {
@@ -130,19 +147,19 @@ class Crossword {
 
                     switch (e.key) {
                         case "ArrowUp":
-                            nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y - 1}"]`);
+                            nextInput = gridBox.querySelector(`input[data-x="${x}"][data-y="${y - 1}"]`);
                             if (nextInput) this.direction = 'vertical';
                             break;
                         case "ArrowDown":
-                            nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y + 1}"]`);
+                            nextInput = gridBox.querySelector(`input[data-x="${x}"][data-y="${y + 1}"]`);
                             if (nextInput) this.direction = 'vertical';
                             break;
                         case "ArrowLeft":
-                            nextInput = this.gameBoard.querySelector(`input[data-x="${x - 1}"][data-y="${y}"]`);
+                            nextInput = gridBox.querySelector(`input[data-x="${x - 1}"][data-y="${y}"]`);
                             if (nextInput) this.direction = 'horizontal';
                             break;
                         case "ArrowRight":
-                            nextInput = this.gameBoard.querySelector(`input[data-x="${x + 1}"][data-y="${y}"]`);
+                            nextInput = gridBox.querySelector(`input[data-x="${x + 1}"][data-y="${y}"]`);
                             if (nextInput) this.direction = 'horizontal';
                             break;
                     }
@@ -200,6 +217,40 @@ class Crossword {
     }
 
     // Utils
+    useHint(hintButton) {
+        if (hintButton.classList.contains('used')) return;
+
+        // Get all unrevealedCells that are part of placed words
+        const availableCells = [];
+        this.placedWords.forEach(placed => {
+            let { x, y, word, direction } = placed;
+
+            for (let i = 0; i < word.length; i++) {
+                const cellX = direction === 'horizontal' ? x + i : x;
+                const cellY = direction === 'horizontal' ? y : y + i;
+                const input = this.gameBoard.querySelector(`input[data-x="${cellX}"][data-y="${cellY}"]`);
+                const cellKey = `${cellX},${cellY}`;
+
+                if (input && !input.parentElement.classList.contains('correct') && !this.revealedCells.has(cellKey)) {
+                    availableCells.push({ input, x: cellX, y: cellY, letter: word[i] });
+                }
+            }
+        });
+
+        if (availableCells.length > 0) {
+            // Choose random unrevealed cell
+            const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
+            
+            if (randomCell.input) {
+                randomCell.input.value = randomCell.letter;
+                randomCell.input.parentElement.classList.add('correct');
+                this.revealedCells.add(`${randomCell.x},${randomCell.y}`);
+                hintButton.classList.add('used');
+                this.checkWords();
+            }
+        }
+    }
+
     placeWords() {
         let wordNumber = 1;
         
@@ -344,21 +395,22 @@ class Crossword {
     findNextCell(currentInput) {
         const x = parseInt(currentInput.dataset.x);
         const y = parseInt(currentInput.dataset.y);
+        const gridBox = this.gameBoard.querySelector('.grid-box');
         
         if (this.direction === 'vertical') {
-            const nextInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y + 1}"]`);
+            const nextInput = gridBox.querySelector(`input[data-x="${x}"][data-y="${y + 1}"]`);
             if (nextInput && !nextInput.parentElement.classList.contains('correct')) {
                 return nextInput;
             }
         } else {
-            const nextInput = this.gameBoard.querySelector(`input[data-x="${x + 1}"][data-y="${y}"]`);
+            const nextInput = gridBox.querySelector(`input[data-x="${x + 1}"][data-y="${y}"]`);
             if (nextInput && !nextInput.parentElement.classList.contains('correct')) {
                 return nextInput;
             }
         }
 
         // If can't move in current direction, try any next available cell
-        const inputs = Array.from(this.gameBoard.querySelectorAll("input"));
+        const inputs = Array.from(gridBox.querySelectorAll("input"));
         const currentIndex = inputs.indexOf(currentInput);
         for (let i = currentIndex + 1; i < inputs.length; i++) {
             if (!inputs[i].parentElement.classList.contains('correct')) {
@@ -371,21 +423,22 @@ class Crossword {
     findPrevCell(currentInput) {
         const x = parseInt(currentInput.dataset.x);
         const y = parseInt(currentInput.dataset.y);
+        const gridBox = this.gameBoard.querySelector('.grid-box');
         
         if (this.direction === 'vertical') {
-            const prevInput = this.gameBoard.querySelector(`input[data-x="${x}"][data-y="${y - 1}"]`);
+            const prevInput = gridBox.querySelector(`input[data-x="${x}"][data-y="${y - 1}"]`);
             if (prevInput && !prevInput.parentElement.classList.contains('correct')) {
                 return prevInput;
             }
         } else {
-            const prevInput = this.gameBoard.querySelector(`input[data-x="${x - 1}"][data-y="${y}"]`);
+            const prevInput = gridBox.querySelector(`input[data-x="${x - 1}"][data-y="${y}"]`);
             if (prevInput && !prevInput.parentElement.classList.contains('correct')) {
                 return prevInput;
             }
         }
 
         // If can't move in current direction, try any previous available cell
-        const inputs = Array.from(this.gameBoard.querySelectorAll("input"));
+        const inputs = Array.from(gridBox.querySelectorAll("input"));
         const currentIndex = inputs.indexOf(currentInput);
         for (let i = currentIndex - 1; i >= 0; i--) {
             if (!inputs[i].parentElement.classList.contains('correct')) {
@@ -399,6 +452,7 @@ class Crossword {
         const input = event.target;
         const x = parseInt(input.dataset.x);
         const y = parseInt(input.dataset.y);
+        const gridBox = this.gameBoard.querySelector('.grid-box');
 
         let anyWordComplete = false;
 
@@ -410,7 +464,7 @@ class Crossword {
 
             let complete = true;
             for (let i = 0; i < placed.word.length; i++) {
-                const input = this.gameBoard.querySelector(`input[data-x="${placed.x + i}"][data-y="${placed.y}"]`);
+                const input = gridBox.querySelector(`input[data-x="${placed.x + i}"][data-y="${placed.y}"]`);
                 if (!input || input.value !== placed.word[i]) {
                     complete = false;
                     break;
@@ -432,7 +486,7 @@ class Crossword {
 
             let complete = true;
             for (let i = 0; i < placed.word.length; i++) {
-                const input = this.gameBoard.querySelector(`input[data-x="${placed.x}"][data-y="${placed.y + i}"]`);
+                const input = gridBox.querySelector(`input[data-x="${placed.x}"][data-y="${placed.y + i}"]`);
                 if (!input || input.value !== placed.word[i]) {
                     complete = false;
                     break;
@@ -451,14 +505,14 @@ class Crossword {
                 if (this.foundWords.has(this.words.find(w => w.english.toUpperCase() === placed.word).french)) {
                     if (placed.direction === 'horizontal') {
                         for (let i = 0; i < placed.word.length; i++) {
-                            const input = this.gameBoard.querySelector(`input[data-x="${placed.x + i}"][data-y="${placed.y}"]`);
+                            const input = gridBox.querySelector(`input[data-x="${placed.x + i}"][data-y="${placed.y}"]`);
                             if (input) {
                                 input.parentElement.classList.add('correct');
                             }
                         }
                     } else {
                         for (let i = 0; i < placed.word.length; i++) {
-                            const input = this.gameBoard.querySelector(`input[data-x="${placed.x}"][data-y="${placed.y + i}"]`);
+                            const input = gridBox.querySelector(`input[data-x="${placed.x}"][data-y="${placed.y + i}"]`);
                             if (input) {
                                 input.parentElement.classList.add('correct');
                             }
