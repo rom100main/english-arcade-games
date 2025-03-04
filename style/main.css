@@ -135,3 +135,30 @@ body {
         }
     }
 }
+
+.hint-box {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.hint-button {
+    width: 40px;
+    height: 40px;
+    background-color: var(--yellow);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &.used {
+        background-color: #333;
+    }
+
+    svg {
+        fill: white;
+    }
+}

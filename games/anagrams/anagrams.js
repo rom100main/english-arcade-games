@@ -47,49 +47,6 @@ class Anagrams {
         this.timer.start();
     }
 
-    useHint(hintButton) {
-        if (hintButton.classList.contains('used')) return;
-        
-        const tiles = Array.from(document.querySelectorAll(".letter-tile"));
-        const word = this.currentScrambled.original;
-        let placed = false;
-
-        // Get array of unplaced indices
-        const unplacedIndices = [];
-        for (let i = 0; i < word.length; i++) {
-            if (!this.placedIndices.has(i)) {
-                unplacedIndices.push(i);
-            }
-        }
-
-        if (unplacedIndices.length > 0) {
-            // Randomly select an unplaced position
-            const randomIndex = Math.floor(Math.random() * unplacedIndices.length);
-            const i = unplacedIndices[randomIndex];
-            const correctLetter = word[i];
-            
-            const currentTileIndex = tiles.findIndex(tile => 
-                tile.textContent === correctLetter && !tile.classList.contains('placed')
-            );
-
-            if (currentTileIndex !== -1) {
-                // Place the letter in the correct position
-                if (currentTileIndex !== i) {
-                    const temp = tiles[i].textContent;
-                    tiles[i].textContent = correctLetter;
-                    tiles[currentTileIndex].textContent = temp;
-                }
-                tiles[i].classList.add('placed');
-                this.placedIndices.add(i);
-                placed = true;
-            }
-        }
-
-        if (placed) {
-            hintButton.classList.add('used');
-        }
-    }
-
     // Create
     createNewAnagram() {
         const remainingWords = this.words.filter(word => 
@@ -196,6 +153,49 @@ class Anagrams {
     }
 
     // Utils
+    useHint(hintButton) {
+        if (hintButton.classList.contains('used')) return;
+        
+        const tiles = Array.from(document.querySelectorAll(".letter-tile"));
+        const word = this.currentScrambled.original;
+        let placed = false;
+
+        // Array of unplaced indices
+        const unplacedIndices = [];
+        for (let i = 0; i < word.length; i++) {
+            if (!this.placedIndices.has(i)) {
+                unplacedIndices.push(i);
+            }
+        }
+
+        if (unplacedIndices.length > 0) {
+            // Randomly select an unplaced position
+            const randomIndex = Math.floor(Math.random() * unplacedIndices.length);
+            const i = unplacedIndices[randomIndex];
+            const correctLetter = word[i];
+            
+            const currentTileIndex = tiles.findIndex(tile => 
+                tile.textContent === correctLetter && !tile.classList.contains('placed')
+            );
+
+            if (currentTileIndex !== -1) {
+                // Place the letter in the correct position
+                if (currentTileIndex !== i) {
+                    const temp = tiles[i].textContent;
+                    tiles[i].textContent = correctLetter;
+                    tiles[currentTileIndex].textContent = temp;
+                }
+                tiles[i].classList.add('placed');
+                this.placedIndices.add(i);
+                placed = true;
+            }
+        }
+
+        if (placed) {
+            hintButton.classList.add('used');
+        }
+    }
+    
     scrambleWord(word) {
         const array = word.split('');
         for (let i = array.length - 1; i > 0; i--) {
