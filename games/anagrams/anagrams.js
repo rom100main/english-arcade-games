@@ -5,6 +5,7 @@ class Anagrams {
         this.foundWords = new Set();
         this.bestTime = BestScore.getBestScore('anagrams');
         this.currentScrambled = null;
+        this.placedIndices = new Set();
 
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
@@ -36,6 +37,7 @@ class Anagrams {
         this.words = [];
         this.foundWords = new Set();
         this.currentScrambled = null;
+        this.placedIndices = new Set();
         this.wordList.innerHTML = '';
         
         this.timer.stop();
@@ -43,6 +45,49 @@ class Anagrams {
         
         this.init();
         this.timer.start();
+    }
+
+    useHint(hintButton) {
+        if (hintButton.classList.contains('used')) return;
+        
+        const tiles = Array.from(document.querySelectorAll(".letter-tile"));
+        const word = this.currentScrambled.original;
+        let placed = false;
+
+        // Get array of unplaced indices
+        const unplacedIndices = [];
+        for (let i = 0; i < word.length; i++) {
+            if (!this.placedIndices.has(i)) {
+                unplacedIndices.push(i);
+            }
+        }
+
+        if (unplacedIndices.length > 0) {
+            // Randomly select an unplaced position
+            const randomIndex = Math.floor(Math.random() * unplacedIndices.length);
+            const i = unplacedIndices[randomIndex];
+            const correctLetter = word[i];
+            
+            const currentTileIndex = tiles.findIndex(tile => 
+                tile.textContent === correctLetter && !tile.classList.contains('placed')
+            );
+
+            if (currentTileIndex !== -1) {
+                // Place the letter in the correct position
+                if (currentTileIndex !== i) {
+                    const temp = tiles[i].textContent;
+                    tiles[i].textContent = correctLetter;
+                    tiles[currentTileIndex].textContent = temp;
+                }
+                tiles[i].classList.add('placed');
+                this.placedIndices.add(i);
+                placed = true;
+            }
+        }
+
+        if (placed) {
+            hintButton.classList.add('used');
+        }
     }
 
     // Create
@@ -77,11 +122,28 @@ class Anagrams {
         const wordInput = document.getElementById("word-input");
         if (wordInput) wordInput.value = "";
 
+        // Reset placed indices and hint buttons
+        this.placedIndices = new Set();
+        document.querySelectorAll('.hint-button').forEach(button => {
+            button.classList.remove('used');
+        });
+
         this.setupTileHandlers();
     }
 
     createBoard() {
         this.gameBoard.innerHTML = '';
+
+        const hintBox = document.createElement("div");
+        hintBox.className = "hint-box";
+        for (let i = 0; i < 3; i++) {
+            const hintButton = document.createElement("div");
+            hintButton.className = "hint-button";
+            hintButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M9 20h6v2H9zm7.906-6.288C17.936 12.506 19 11.259 19 9c0-3.859-3.141-7-7-7S5 5.141 5 9c0 2.285 1.067 3.528 2.101 4.73.358.418.729.851 1.084 1.349.144.206.38.996.591 1.921H8v2h8v-2h-.774c.213-.927.45-1.719.593-1.925.352-.503.726-.94 1.087-1.363zm-2.724.213c-.434.617-.796 2.075-1.006 3.075h-2.351c-.209-1.002-.572-2.463-1.011-3.08a20.502 20.502 0 0 0-1.196-1.492C7.644 11.294 7 10.544 7 9c0-2.757 2.243-5 5-5s5 2.243 5 5c0 1.521-.643 2.274-1.615 3.413-.373.438-.796.933-1.203 1.512z"></path></svg>`;
+            hintButton.addEventListener('click', () => this.useHint(hintButton));
+            hintBox.appendChild(hintButton);
+        }
+        this.gameBoard.appendChild(hintBox);
 
         const anagramContainer = document.createElement("div");
         anagramContainer.className = "anagram-container";
@@ -168,6 +230,8 @@ class Anagrams {
 
         tiles.forEach(tile => {
             tile.addEventListener("click", () => {
+                if (tile.classList.contains('placed')) return;
+                
                 if (tile.classList.contains("selected")) {
                     tile.classList.remove("selected");
                     selectedTiles = selectedTiles.filter(t => t !== tile);
@@ -177,9 +241,11 @@ class Anagrams {
 
                     if (selectedTiles.length === 2) {
                         const [tile1, tile2] = selectedTiles;
-                        const temp = tile1.textContent;
-                        tile1.textContent = tile2.textContent;
-                        tile2.textContent = temp;
+                        if (!tile1.classList.contains('placed') && !tile2.classList.contains('placed')) {
+                            const temp = tile1.textContent;
+                            tile1.textContent = tile2.textContent;
+                            tile2.textContent = temp;
+                        }
 
                         tile1.classList.remove("selected");
                         tile2.classList.remove("selected");
