@@ -42,6 +42,12 @@
         color: white;
         transform: scale(1.1);
     }
+
+    &.placed {
+        background: var(--green);
+        color: white;
+        cursor: not-allowed;
+    }
 }
 
 .input-area {

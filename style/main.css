@@ -6,6 +6,7 @@
     --orange: #f39c12;
     --red: #c0392b;
     --red-light: #da695d;
+    --yellow: #f1c40f;
 
     --btn: var(--grey);
     --btn-hover: var(--grey-light);
@@ -67,10 +68,9 @@ body {
     flex: 1;
     display: flex;
     gap: 10px;
-    margin-bottom: 10px;
 
     h2 {
-        margin-top: 0;
+        margin: 0;
         flex-shrink: 1;
     }
 
@@ -133,5 +133,54 @@ body {
             text-decoration: line-through;
             transform: scale(0.95);
         }
+    }
+}
+
+.hint-box {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.hint-button {
+    width: 40px;
+    height: 40px;
+    background-color: var(--yellow);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &.used {
+        background-color: #333;
+    }
+
+    svg {
+        fill: white;
+    }
+}
+
+.grid-box {
+    display: grid;
+    justify-content: center;
+    gap: 2px;
+
+    .cell {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        font-size: 1.2em;
+        font-weight: bold;
+        user-select: none;
+        -webkit-user-select: none; /* Safari */
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 4px;
     }
 }

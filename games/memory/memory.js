@@ -189,7 +189,7 @@ class MemoryGame {
         const content = `
             <h2>Congratulations!</h2>
             <p>You completed the game in <span id="final-attempts">${this.attempts}</span> attempts!</p>
-            <p class="best-score-text" style="color: ${isNewBestScore ? '#27ae60' : '#666'}">
+            <p class="best-score-text" style="color: ${isNewBestScore ? "var(--green)" : "" }">
                 ${isNewBestScore ? '🎉 New Best Score! 🎉' : `Best Score: ${this.bestScore}`}
             </p>
             <button class="button">Play Again</button>
