@@ -23,5 +23,10 @@ const games = [
         "name": "Pyramid",
         "link": "games/pyramid/pyramid.html",
         "icon": "P"
+    },
+    {
+        "name": "Hangman",
+        "link": "games/hangman/hangman.html",
+        "icon": "H"
     }
 ];

@@ -13,5 +13,10 @@ const Random = {
             .filter(word => !word.english.includes(" "))
             .sort(() => 0.5 - Math.random())
             .slice(0, count);
+    },
+
+    random(min, max) {
+        var index = Math.floor(Math.random() * (max - min + 1) + min);
+        return index;
     }
 }

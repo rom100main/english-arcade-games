@@ -1,127 +1,148 @@
-class hangman {
+class Hangman {
     constructor() {
         this.counter = document.getElementById("counter");
         this.word_field = document.getElementById("word_field");
+        this.clue_field = document.getElementById("clue-field");
+        this.clue_button = document.getElementById("clue-button");
         this.guess_field = document.getElementById("guess_area");
         this.guess_button = document.getElementById("guess_button");
         this.guessed_field = document.getElementById("guessed_field");
+        this.difficultySelect = document.getElementById("difficulty");
+        this.bestScoreDisplay = document.getElementById("best-score");
         this.default_char = "-";
-        this.won_popup = null;
-        this.lost_popup = null;
-        this.confetti = null;
+        this.won_popup = new Popup();
+        this.lost_popup = new Popup();
         this.word = "";
-        this.left = 10;
+        this.letters = [];
+        this.tries = 10;
         this.guessed = [];
+        this.currentScore = 0;
         
         this.init();
     }
 
     init() {
-        //* * * * * CONFETTI * * * * *
-        window.confetti = new Confetti();
-
-        // * * * * * WON * * * * *
-        this.won_popup = new Popup();
-        let won_content = `
-            <div class="popup-content">
-                <h2>Congratulations!</h2>
-                <p>You found the correct word.</p>
-                <button class="retry-button">Play again</button>
-            </div>
-        `;
-        this.won_popup.onHide(() => {
-            const canvas = window.confetti.canvas;
-            if (canvas) {
-                canvas.style.transition = 'opacity 0.3s ease-out';
-                canvas.style.opacity = '0';
-                setTimeout(() => {
-                    window.confetti.stop();
-                    canvas.style.opacity = '1';
-                    canvas.style.transition = '';
-                }, 300);
+        // * * * * * EVENTS * * * * *
+        this.clue_button.addEventListener('click', () => this.revealClue());
+        this.guess_button.addEventListener('click', () => this.guess());
+        this.difficultySelect.addEventListener('change', () => this.resetGame());
+        this.guess_field.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.guess();
             }
-            this.resetGame();
         });
-        this.won_popup.setContent(won_content);
-        this.won_popup.popup.querySelector('.retry-button').addEventListener('click', () => { this.won_popup.hide() });
 
-        // * * * * * LOST * * * * *
-        this.lost_popup = new Popup();
-        let lost_content = `
-            <div class="popup-content">
-                <h2>Game Over</h2>
-                <p>Oh no, you have no tries left...</p>
-                <button class="retry-button">Play again</button>
-            </div>
-        `;
-        this.lost_popup.setContent(lost_content);
-        this.lost_popup.popup.querySelector('.retry-button').addEventListener('click', () => { this.lost_popup.hide() });
-
-        // * * * * * GUESS * * * * *
-        this.guess_button.addEventListener('click', () => { this.guess() } )
-
+        // * * * * * INITIAL SETUP * * * * *
+        this.displayBestScore();
         this.resetGame();
     }
 
-    refreshCount() {
-        this.counter.textContent = this.left.toString();
+    displayBestScore() {
+        const bestScore = BestScore.getBestScore('hangman-' + this.difficultySelect.value);
+        this.bestScoreDisplay.textContent = bestScore !== null ? bestScore : '-';
     }
 
-    randomWord() {
-        var index = random(0, words.length - 1);
-        this.word = words[index].english;
+    updateBestScore() {
+        const gameId = 'hangman-' + this.difficultySelect.value;
+        const currentBest = BestScore.getBestScore(gameId);
+        if (currentBest === null || this.tries > currentBest) {
+            BestScore.setBestScore(gameId, this.tries);
+            this.displayBestScore();
+            return true;
+        }
+        return false;
+    }
 
-        this.left = 10;
-        console.log("Word: " + this.word);
-
+    getRandomWord() {
+        const level = this.difficultySelect.value;
+        const word = Random.getRandomWords(1, level)[0];
+        this.word = word.english.toUpperCase();
+        this.letters = [];
+        for (let i = 0; i < this.word.length; i++) {
+            if (!this.letters.includes(this.word[i])) {
+                this.letters.push(this.word[i]);
+            }
+        }    
         this.word_field.innerHTML = "";
         for (let letter = 0; letter < this.word.length; letter++) {
             let text = document.createElement('p');
-            text.innerHTML = this.default_char;
+            text.textContent = this.default_char;
             this.word_field.append(text); 
         }
 
-        this.revealRandomLetter(Math.max(this.word.length / 3, 1));
-        this.refreshCount();
+        this.revealRandomLetter(1);
     }
 
     revealRandomLetter(n) {
-        var inword = [];
-        for (let i = 0; i < n; i++) {
-            var index = random(0, this.word.length - 1);
-            inword.push(this.word[index]);
-        }
-        inword.forEach(element => {
+        let a = 0;
+        while (a < n) {
+            a++;
+            const index = Random.random(0, this.letters.length - 1);
             for (let i = 0; i < this.word.length; i++) {
-                if (this.word[i] == element) this.word_field.children[i].textContent = this.word[i];
+                if (this.word[i] == this.letters.at(index)) {
+                    this.word_field.children[i].innerHTML = this.word[i];
+                }
             }
-        });
+            this.letters.splice(index, 1);
+            console.log("letters = " + this.letters);
+        }
     }
 
-    guess() {
-        var letter = this.guess_field.value;
-        var found = false;
-        for (let i = 0; i < this.word.length; i++) {
-            if (this.word[i].toLowerCase() == letter.toLowerCase()) {
-                this.word_field.children[i].textContent = this.word[i];
-                found = true;
-            }
-        }
-        this.guess_field.value = "";
-        this.addGuessed(letter);
-        if (!found) this.left--;
-        this.refreshCount();
+    revealClue() {
+        this.reduceTries(1); 
+        this.revealRandomLetter(1);
+        this.checkComplete();
+    }
+
+    checkComplete() {
         if (this.isComplete()) {
             this.showWonPopup();
-        }
-        else if (this.left == 0) {
+        } else if (this.tries === 0) {
             this.showLostPopup();
         }
     }
 
+    guess() {
+        const letter = this.guess_field.value.toUpperCase();
+        if (!letter || this.guessed.includes(letter)) {
+            return;
+        }
+
+        let found = false;
+        for (let i = 0; i < this.word.length; i++) {
+            if (this.word[i] === letter) {
+                this.word_field.children[i].textContent = this.word[i];
+                found = true;
+            }
+        }
+
+        if (!found) {
+            this.reduceTries(1);
+        }
+
+        for (let i = 0; i < this.letters.length; i++) {
+            if (this.letters.at(i) === letter) {
+                this.letters.splice(i, 1);
+            }
+        }
+        console.log("letters = " + this.letters);
+
+        this.guess_field.value = "";
+        this.addGuessed(letter);
+        this.checkComplete();
+
+        this.guess_field.focus();
+    }
+
+    reduceTries(n) {
+        this.tries -= n;
+        this.counter.textContent = this.tries;
+    }
+
     isComplete() {
         for (let i = 0; i < this.word.length; i++) {
-            if (this.word_field.children[i].textContent == this.default_char) {
+            if (this.word_field.children[i].textContent === this.default_char) {
                 return false;
             }
         }
@@ -129,8 +150,12 @@ class hangman {
     }
 
     addGuessed(letter) {
-        this.guessed.push(letter);
-        this.guessed_field.innerHTML += "<p>" + letter + "</p>";
+        if (!this.guessed.includes(letter)) {
+            this.guessed.push(letter);
+            const p = document.createElement('p');
+            p.textContent = letter;
+            this.guessed_field.appendChild(p);
+        }
     }
 
     resetGuessed() {
@@ -138,19 +163,53 @@ class hangman {
         this.guessed_field.innerHTML = "";
     }
 
-    resetGame() {
-        this.resetGuessed();
-        this.randomWord();
-    }
-
     showWonPopup() {
+        const isNewBest = this.updateBestScore();
+        const currentBest = BestScore.getBestScore('hangman-' + this.difficultySelect.value);
+        
+        let won_content = `
+            <div class="popup-content">
+                <h2>Congratulations!</h2>
+                <p>You found the word with <span style="font-weight: bold;">${this.tries}</span> tries left!</p>
+                <div class="best-score-text">Best Score: <span id="popup-best-score">${currentBest}</span></div>
+                ${isNewBest ? '<p style="color: #4CAF50">New Best Score!</p>' : ''}
+                <button class="retry-button">Play again</button>
+            </div>
+        `;
+
+        this.won_popup.setContent(won_content);
+        this.won_popup.popup.querySelector('.retry-button').addEventListener('click', () => {
+            window.confetti.hide();
+            this.won_popup.hide();
+            this.resetGame();
+        });
         window.confetti.start();
         this.won_popup.show();
     }
 
     showLostPopup() {
+        const lost_content = `
+            <div class="popup-content">
+                <h2>Game Over</h2>
+                <p>The word was: <span style="font-weight: bold;">${this.word}</span></p>
+                <button class="retry-button">Try again</button>
+            </div>
+        `;
+        this.lost_popup.setContent(lost_content);
+        this.lost_popup.popup.querySelector('.retry-button').addEventListener('click', () => {
+            this.lost_popup.hide();
+            this.resetGame();
+        });
         this.lost_popup.show();
+    }
+
+    resetGame() {
+        this.tries = 10;
+        this.counter.textContent = this.tries;
+        this.resetGuessed();
+        this.getRandomWord();
+        this.displayBestScore();
     }
 }
 
-new hangman();
+new Hangman();
