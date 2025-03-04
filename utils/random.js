@@ -1,5 +1,15 @@
 const Random = {
     /**
+     * Get a random number between a range
+     * @param {number} min - Minimum number
+     * @param {number} max - Maximum number
+     * @returns {number} A random number between the range
+     */
+    random(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    },
+
+    /**
      * Get random words from a specific level
      * @param {number} count - Number of words to get
      * @param {string} level - Level to get words from
@@ -13,10 +23,5 @@ const Random = {
             .filter(word => !word.english.includes(" "))
             .sort(() => 0.5 - Math.random())
             .slice(0, count);
-    },
-
-    random(min, max) {
-        var index = Math.floor(Math.random() * (max - min + 1) + min);
-        return index;
     }
 }
