@@ -21,30 +21,15 @@
     display: flex;
     align-items: center;
     gap: 10px;
-}
 
-.level-selector select {
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: 1px solid var(--grey);
-    background: white;
-    color: var(--grey);
-    cursor: pointer;
-}
-
-#stats {
-    display: flex;
-    gap: 15px;
-    color: var(--grey);
-}
-
-.score-container {
-    text-align: right;
-}
-
-.best-score {
-    color: var(--grey);
-    font-size: 1.1em;
+    select {
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 1px solid var(--grey);
+        background: white;
+        color: var(--grey);
+        cursor: pointer;
+    }
 }
 
 .clue-field {
@@ -78,18 +63,18 @@
     border-radius: 10px;
     box-shadow: var(--shadow);
     margin-bottom: 20px;
-}
 
-.input-field textarea {
-    height: 40px;
-    width: 40px;
-    font-size: 1.2em;
-    text-align: center;
-    resize: none;
-    overflow: hidden;
-    border-radius: 5px;
-    border: 1px solid var(--grey);
-    padding: 5px;
+    textarea {
+        height: 40px;
+        width: 40px;
+        font-size: 1.2em;
+        text-align: center;
+        resize: none;
+        overflow: hidden;
+        border-radius: 5px;
+        border: 1px solid var(--grey);
+        padding: 5px;
+    }
 }
 
 #guess_button {
@@ -101,10 +86,10 @@
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: var(--shadow-item);
-}
 
-#guess_button:hover {
-    transform: scale(1.05);
+    &:hover {
+        transform: scale(1.05);
+    }
 }
 
 .guessed-field {
@@ -113,25 +98,25 @@
     border-radius: 10px;
     box-shadow: var(--shadow);
     margin-bottom: 20px;
-}
 
-.guessed-field > p {
-    color: var(--grey);
-    margin-bottom: 10px;
+    > p {
+        color: var(--grey);
+        margin-bottom: 10px;
+    }
 }
 
 .letters-field {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-}
 
-.letters-field p {
-    padding: 8px 12px;
-    background: white;
-    border-radius: 5px;
-    box-shadow: var(--shadow-item);
-    color: var(--grey);
+    p {
+        padding: 8px 12px;
+        background: white;
+        border-radius: 5px;
+        box-shadow: var(--shadow-item);
+        color: var(--grey);
+    }
 }
 
 .word-field {
@@ -143,32 +128,17 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: var(--shadow);
-}
 
-.word-field p {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    font-size: 1.2em;
-    font-weight: bold;
-    border-radius: 5px;
-    box-shadow: var(--shadow-item);
-}
-
-.button {
-    display: inline-block;
-    padding: 10px 20px;
-    background: var(--blue);
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    margin-top: 20px;
-}
-
-.button:hover {
-    transform: scale(1.05);
+    p {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        font-size: 1.2em;
+        font-weight: bold;
+        border-radius: 5px;
+        box-shadow: var(--shadow-item);
+    }
 }
