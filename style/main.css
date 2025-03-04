@@ -162,3 +162,25 @@ body {
         fill: white;
     }
 }
+
+.grid-box {
+    display: grid;
+    justify-content: center;
+    gap: 2px;
+
+    .cell {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        font-size: 1.2em;
+        font-weight: bold;
+        user-select: none;
+        -webkit-user-select: none; /* Safari */
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 4px;
+    }
+}
