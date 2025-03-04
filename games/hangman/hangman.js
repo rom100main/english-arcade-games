@@ -48,12 +48,7 @@ class Hangman {
         this.timer.start();
     }
 
-    selectNewWord() {
-        const words = Random.getRandomWords(1, this.difficulty);
-        this.currentWord = words[0];
-        this.updateWordDisplay();
-    }
-
+    // Create
     createHintButtons() {
         this.hintBox.innerHTML = '';
         for (let i = 0; i < 3; i++) {
@@ -63,30 +58,6 @@ class Hangman {
             hintButton.addEventListener('click', () => this.useHint(hintButton));
             this.hintBox.appendChild(hintButton);
         }
-    }
-
-    useHint(hintButton) {
-        if (hintButton.classList.contains('used') || this.gameEnded) return;
-
-        const word = this.currentWord.english.toUpperCase();
-        const unguessedLetters = [...word].filter(letter => !this.guessedLetters.has(letter));
-
-        if (unguessedLetters.length > 0) {
-            const randomLetter = unguessedLetters[Math.floor(Math.random() * unguessedLetters.length)];
-            this.guessedLetters.add(randomLetter);
-            this.createWordDisplay();
-            this.createKeyboard();
-
-            if (this.isWordComplete()) {
-                this.handleGameOver(true);
-            }
-
-            hintButton.classList.add('used');
-        }
-    }
-
-    updateWordDisplay() {
-        this.wordElem.textContent = `${this.currentWord.french} (${this.maxTries - this.mistakes} tries left)`;
     }
 
     createWordDisplay() {
@@ -140,6 +111,52 @@ class Hangman {
         });
     }
 
+    // Update
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById("best-score");
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
+        }
+    }
+
+    updateWordDisplay() {
+        this.wordElem.textContent = `${this.currentWord.french} (${this.maxTries - this.mistakes} tries left)`;
+    }
+
+    // Utils
+    useHint(hintButton) {
+        if (hintButton.classList.contains('used') || this.gameEnded) return;
+
+        const word = this.currentWord.english.toUpperCase();
+        const unguessedLetters = [...word].filter(letter => !this.guessedLetters.has(letter));
+
+        if (unguessedLetters.length > 0) {
+            const randomLetter = unguessedLetters[Math.floor(Math.random() * unguessedLetters.length)];
+            this.guessedLetters.add(randomLetter);
+            this.createWordDisplay();
+            this.createKeyboard();
+
+            if (this.isWordComplete()) {
+                this.handleGameOver(true);
+            }
+
+            hintButton.classList.add('used');
+        }
+    }
+    
+    selectNewWord() {
+        const words = Random.getRandomWords(1, this.difficulty);
+        this.currentWord = words[0];
+        this.updateWordDisplay();
+    }
+
+    isWordComplete() {
+        return [...this.currentWord.english.toUpperCase()].every(
+            letter => this.guessedLetters.has(letter)
+        );
+    }
+
+    // Handlers
     handleGuess(letter) {
         this.guessedLetters.add(letter);
         
@@ -158,19 +175,6 @@ class Hangman {
             this.handleGameOver(false);
         } else if (this.isWordComplete()) {
             this.handleGameOver(true);
-        }
-    }
-
-    isWordComplete() {
-        return [...this.currentWord.english.toUpperCase()].every(
-            letter => this.guessedLetters.has(letter)
-        );
-    }
-
-    updateBestScoreDisplay() {
-        const bestScoreElement = document.getElementById("best-score");
-        if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestTime === null ? "-" : this.timer.formatTime(this.bestTime);
         }
     }
 
