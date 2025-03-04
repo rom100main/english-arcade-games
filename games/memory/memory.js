@@ -1,24 +1,25 @@
 class MemoryGame {
     constructor(rows = 4, cols = 5) {
+        this.gameBoard = document.getElementById('game-board');
+        this.pairsDisplay = document.getElementById('pairs');
+        this.attemptsDisplay = document.getElementById('attempts');
+        this.difficultySelect = document.getElementById('difficulty');
+        
         this.cards = [];
         this.flippedCards = [];
         this.matchedPairs = 0;
         this.attempts = 0;
         this.isLocked = false;
-        this.bestScore = BestScore.getBestScore('memory');
+        this.bestScore = BestScore.getBestScore('memory', this.difficultySelect.value);
         this.popup = null;
         this.rows = rows;
         this.cols = cols;
-
-        this.gameBoard = document.getElementById('game-board');
-        this.pairsDisplay = document.getElementById('pairs');
-        this.attemptsDisplay = document.getElementById('attempts');
-        this.difficultySelect = document.getElementById('difficulty');
-
         this.difficulty = this.difficultySelect.value;
 
         this.difficultySelect.addEventListener("change", () => {
             this.difficulty = this.difficultySelect.value;
+            this.bestScore = BestScore.getBestScore('memory', this.difficulty);
+            this.updateBestScoreDisplay();
             this.reset();
         });
 
@@ -178,7 +179,7 @@ class MemoryGame {
         const isNewBestScore = this.bestScore === null || this.attempts < this.bestScore;
 
         if (isNewBestScore) {
-            BestScore.setBestScore('memory', this.attempts);
+            BestScore.setBestScore('memory', this.attempts, this.difficulty);
             this.bestScore = this.attempts;
             this.updateBestScoreDisplay();
             window.confetti.start();

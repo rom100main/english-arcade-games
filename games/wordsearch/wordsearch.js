@@ -1,5 +1,9 @@
 class WordSearch {
     constructor(size = 15, nbWords = 8) {
+        this.gameBoard = document.getElementById("game-board");
+        this.wordList = document.getElementById("word-list");
+        this.difficultySelect = document.getElementById("difficulty");
+
         this.size = size;
         this.nbWords = nbWords;
         this.board = [];
@@ -7,19 +11,16 @@ class WordSearch {
         this.placedWords = [];
         this.selectedCells = [];
         this.foundWords = new Set();
-        this.bestTime = BestScore.getBestScore('wordsearch');
-
-        this.gameBoard = document.getElementById("game-board");
-        this.wordList = document.getElementById("word-list");
-        this.difficultySelect = document.getElementById("difficulty");
         this.revealedCells = new Set();
-        
         this.difficulty = this.difficultySelect.value;
+        this.bestTime = BestScore.getBestScore('wordsearch', this.difficultySelect.value);
         
         this.timer = new Timer();
 
         this.difficultySelect.addEventListener("change", () => {
             this.difficulty = this.difficultySelect.value;
+            this.bestTime = BestScore.getBestScore('wordsearch', this.difficulty);
+            this.updateBestScoreDisplay();
             this.reset();
         });
         
@@ -328,7 +329,7 @@ class WordSearch {
         const isNewBestTime = this.bestTime === null || finalTime < this.bestTime;
         
         if (isNewBestTime) {
-            BestScore.setBestScore('wordsearch', finalTime);
+            BestScore.setBestScore('wordsearch', finalTime, this.difficulty);
             this.bestTime = finalTime;
             this.updateBestScoreDisplay();
             window.confetti.start();

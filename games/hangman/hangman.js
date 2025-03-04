@@ -1,24 +1,26 @@
 class Hangman {
-    constructor() {
-        this.maxTries = 6;
-        this.mistakes = 0;
-        this.currentWord = null;
-        this.guessedLetters = new Set();
-        this.gameEnded = false;
-        this.bestTime = BestScore.getBestScore('hangman');
-
+    constructor(maxTries = 6) {
         this.gameBoard = document.getElementById("game-board");
         this.wordDisplay = document.getElementById("word-display");
         this.keyboard = document.getElementById("keyboard");
         this.difficultySelect = document.getElementById("difficulty");
         this.wordElem = document.getElementById("word");
         this.hintBox = document.getElementById("hint-box");
+
+        this.maxTries = maxTries;
+        this.mistakes = 0;
+        this.currentWord = null;
+        this.guessedLetters = new Set();
+        this.gameEnded = false;
         this.difficulty = this.difficultySelect.value;
+        this.bestTime = BestScore.getBestScore('hangman', this.difficultySelect.value);
         
         this.timer = new Timer();
 
         this.difficultySelect.addEventListener("change", () => {
             this.difficulty = this.difficultySelect.value;
+            this.bestTime = BestScore.getBestScore('hangman', this.difficulty);
+            this.updateBestScoreDisplay();
             this.reset();
         });
         
@@ -185,7 +187,7 @@ class Hangman {
         const isNewBestTime = won && (this.bestTime === null || finalTime < this.bestTime);
         
         if (isNewBestTime) {
-            BestScore.setBestScore('hangman', finalTime);
+            BestScore.setBestScore('hangman', finalTime, this.difficulty);
             this.bestTime = finalTime;
             this.updateBestScoreDisplay();
             window.confetti.start();
