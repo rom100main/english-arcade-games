@@ -1,68 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Info -->
-    <title>Hangman</title>
-    <!-- Styles -->
-    <link rel="stylesheet" href="../../style/main.css">
-    <link rel="stylesheet" href="../../utils/popup.css">
-    <link rel="stylesheet" href="hangman.css">
-    <!-- Data -->
-    <script src="../../data/words.js" defer></script>
-    <!-- Scripts -->
-    <script src="../../utils/confetti.js" defer></script>
-    <script src="../../utils/random.js" defer></script>
-    <script src="../../utils/popup.js" defer></script>
-    <script src="../../utils/best-score.js" defer></script>
-    <script src="hangman.js" defer></script>
-</head>
-<body>
-    <div class="game-container">
-        <div class="game-header">
-            <div class="info-container">
-                <h2>Hangman</h2>
-                <div class="level-selector">
-                    <div>
-                        <select id="difficulty">
-                            <option value="A1">A1</option>
-                            <option value="A2">A2</option>
-                            <option value="B1">B1</option>
-                            <option value="B2" selected>B2</option>
-                            <option value="C1">C1</option>
-                            <option value="C2">C2</option>
-                        </select>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Info -->
+        <title>Hangman</title>
+        <!-- Styles -->
+        <link rel="stylesheet" href="../../style/main.css">
+        <link rel="stylesheet" href="../../utils/popup.css">
+        <link rel="stylesheet" href="hangman.css">
+        <!-- Data -->
+        <script src="../../data/words.js" defer></script>
+        <!-- Scripts -->
+        <script src="../../utils/random.js" defer></script>
+        <script src="../../utils/popup.js" defer></script>
+        <script src="../../utils/confetti.js" defer></script>
+        <script src="../../utils/best-score.js" defer></script>
+        <script src="../../utils/timer.js" defer></script>
+        <script src="hangman.js" defer></script>
+    </head>
+    <body>
+        <div class="game-container">
+            <div class="game-header">
+                <div class="info-container">
+                    <h2>Hangman</h2>
+                    <div class="level-selector">
+                        <div>
+                            <select id="difficulty">
+                                <option value="A1">A1</option>
+                                <option value="A2">A2</option>
+                                <option value="B1">B1</option>
+                                <option value="B2" selected>B2</option>
+                                <option value="C1">C1</option>
+                                <option value="C2">C2</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-                <div id="stats">
-                    <span>Tries left: <span id="counter">10</span></span>
+                <div class="score-container">
+                    <div class="time">Time: <b id="timer">00:00</b></div>
+                    <div class="best-score">Best Time: <b id="best-score">-</b></div>
                 </div>
             </div>
-            <div class="score-container">
-                <div class="best-score">Best Score: <b id="best-score">-</b></div>
+            <div id="game-board">
+                <div id="hint-box" class="hint-box"></div>
+                <div id="word"></div>
+                <div id="word-display"></div>
+                <div id="keyboard"></div>
             </div>
+            <a href="../../index.html" class="button">Back to Main</a>
         </div>
-
-        <div id = "clue-field" class="clue-field">
-            <p>Clue:</p>
-            <button id="clue-button">Get a clue</button>
-        </div>
-
-        <div class="input-field">
-            <p>Enter your guess:</p>
-            <textarea id="guess_area" autocomplete="off" maxlength="1"></textarea>
-            <button id="guess_button">Guess</button>
-        </div>
-        
-        <div class="guessed-field">
-            <p>Letters you have already guessed:</p>
-            <div class="letters-field" id="guessed_field"></div>
-        </div>
-        
-        <div id="word_field" class="word-field"></div>
-        
-        <a href="../../index.html" class="button">Back to Main</a>
-    </div>
-</body>
+    </body>
 </html>

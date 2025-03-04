@@ -1,88 +1,58 @@
-.game-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.game-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
-}
-
-.info-container {
+#game-board {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-}
-
-.level-selector {
-    display: flex;
     align-items: center;
-    gap: 10px;
-
-    select {
-        padding: 5px 10px;
-        border-radius: 5px;
-        border: 1px solid var(--grey);
-        background: white;
-        color: var(--grey);
-        cursor: pointer;
-    }
-}
-
-.clue-field {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--bg-secondary);
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
+    background: var(--bg-secondary);
     box-shadow: var(--shadow);
-    margin-bottom: 20px;
 }
 
-#clue-button {
-    padding: 8px 16px;
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+#word {
+    padding: 15px 20px;
+    background: white;
+    border-radius: 8px;
     box-shadow: var(--shadow-item);
+    margin-bottom: 20px;
+    font-style: italic;
 }
 
-.input-field {
+#word-display {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.letter-box {
+    width: 40px;
+    height: 40px;
+    border-bottom: 3px solid var(--grey);
     display: flex;
     align-items: center;
-    gap: 10px;
-    background: var(--bg-secondary);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-
-    textarea {
-        height: 40px;
-        width: 40px;
-        font-size: 1.2em;
-        text-align: center;
-        resize: none;
-        overflow: hidden;
-        border-radius: 5px;
-        border: 1px solid var(--grey);
-        padding: 5px;
-    }
+    justify-content: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
-#guess_button {
-    padding: 8px 16px;
-    background: var(--blue);
-    color: white;
+#keyboard {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    max-width: 500px;
+    width: 100%;
+}
+
+.keyboard-key {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
     border: none;
     border-radius: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: var(--shadow-item);
@@ -90,55 +60,21 @@
     &:hover {
         transform: scale(1.05);
     }
-}
 
-.guessed-field {
-    background: var(--bg-secondary);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-
-    > p {
-        color: var(--grey);
-        margin-bottom: 10px;
+    &.used {
+        background: var(--grey);
+        color: white;
+        cursor: not-allowed;
+        transform: scale(0.95);
     }
-}
 
-.letters-field {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-
-    p {
-        padding: 8px 12px;
-        background: white;
-        border-radius: 5px;
-        box-shadow: var(--shadow-item);
-        color: var(--grey);
+    &.correct {
+        background: var(--green);
+        color: white;
     }
-}
 
-.word-field {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 30px 0;
-    background: var(--bg-secondary);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-
-    p {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: white;
-        font-size: 1.2em;
-        font-weight: bold;
-        border-radius: 5px;
-        box-shadow: var(--shadow-item);
+    &.wrong {
+        background: var(--red);
+        color: white;
     }
 }
