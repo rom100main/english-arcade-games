@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Info -->
+        <title>Translation Quiz</title>
+        <!-- Styles -->
+        <link rel="stylesheet" href="../../style/main.css">
+        <link rel="stylesheet" href="../../utils/popup.css">
+        <link rel="stylesheet" href="quiz.css">
+        <!-- Data -->
+        <script src="../../data/words.js" defer></script>
+        <!-- Scripts -->
+        <script src="../../utils/random.js" defer></script>
+        <script src="../../utils/popup.js" defer></script>
+        <script src="../../utils/confetti.js" defer></script>
+        <script src="../../utils/best-score.js" defer></script>
+        <script src="../../utils/timer.js" defer></script>
+        <script src="quiz.js" defer></script>
+    </head>
+    <body>
+        <div class="game-container">
+            <div class="game-header">
+                <div class="info-container">
+                    <h2>Translation Quiz</h2>
+                    <div class="level-selector">
+                        <div>
+                            <select id="difficulty">
+                                <option value="A1">A1</option>
+                                <option value="A2">A2</option>
+                                <option value="B1">B1</option>
+                                <option value="B2" selected>B2</option>
+                                <option value="C1">C1</option>
+                                <option value="C2">C2</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-container">
+                    <div class="score">Score: <b id="score">0</b></div>
+                    <div class="best-score">Best Score: <b id="best-score">-</b></div>
+                </div>
+            </div>
+            <div id="quiz-container">
+                <div id="word-display"></div>
+                <div id="choices"></div>
+            </div>
+            <a href="../../index.html" class="button">Back to Main</a>
+        </div>
+    </body>
+</html>

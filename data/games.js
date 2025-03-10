@@ -28,5 +28,10 @@ const games = [
         "name": "Hangman",
         "link": "games/hangman/hangman.html",
         "icon": "H"
+    },
+    {
+        "name": "Quiz",
+        "link": "games/quiz/quiz.html",
+        "icon": "Q"
     }
 ];
