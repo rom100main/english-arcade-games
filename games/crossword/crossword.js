@@ -1,19 +1,19 @@
 class Crossword {
     constructor(size = 20, nbWords = 8) {
+        this.gameBoard = document.getElementById("game-board");
+        this.wordList = document.getElementById("word-list");
+        this.difficultySelect = document.getElementById("difficulty");
+
         this.size = size;
         this.nbWords = nbWords;
         this.board = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
         this.words = [];
         this.placedWords = [];
         this.foundWords = new Set();
-        this.bestTime = BestScore.getBestScore('crossword');
+        this.bestTime = BestScore.getBestScore('crossword', this.difficultySelect.value);
         this.direction = null; // 'horizontal' or 'vertical'
         this.lastInput = null; // track last input cell coordinates
         this.revealedCells = new Set();
-
-        this.gameBoard = document.getElementById("game-board");
-        this.wordList = document.getElementById("word-list");
-        this.difficultySelect = document.getElementById("difficulty");
 
         this.difficulty = this.difficultySelect.value;
         
@@ -21,6 +21,8 @@ class Crossword {
 
         this.difficultySelect.addEventListener("change", () => {
             this.difficulty = this.difficultySelect.value;
+            this.bestTime = BestScore.getBestScore('crossword', this.difficulty);
+            this.updateBestScoreDisplay();
             this.reset();
         });
         
@@ -533,7 +535,7 @@ class Crossword {
         const isNewBestTime = this.bestTime === null || finalTime < this.bestTime;
         
         if (isNewBestTime) {
-            BestScore.setBestScore('crossword', finalTime);
+            BestScore.setBestScore('crossword', finalTime, this.difficulty);
             this.bestTime = finalTime;
             this.updateBestScoreDisplay();
             window.confetti.start();

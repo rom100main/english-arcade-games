@@ -1,22 +1,23 @@
 class Anagrams {
     constructor(nbWords = 8) {
-        this.nbWords = nbWords;
-        this.words = [];
-        this.foundWords = new Set();
-        this.bestTime = BestScore.getBestScore('anagrams');
-        this.currentScrambled = null;
-        this.placedIndices = new Set();
-
         this.gameBoard = document.getElementById("game-board");
         this.wordList = document.getElementById("word-list");
         this.difficultySelect = document.getElementById("difficulty");
 
+        this.nbWords = nbWords;
+        this.words = [];
+        this.foundWords = new Set();
+        this.bestTime = BestScore.getBestScore('anagrams', this.difficultySelect.value);
+        this.currentScrambled = null;
+        this.placedIndices = new Set();
         this.difficulty = this.difficultySelect.value;
         
         this.timer = new Timer();
 
         this.difficultySelect.addEventListener("change", () => {
             this.difficulty = this.difficultySelect.value;
+            this.bestTime = BestScore.getBestScore('anagrams', this.difficulty);
+            this.updateBestScoreDisplay();
             this.reset();
         });
         
@@ -261,7 +262,7 @@ class Anagrams {
         const isNewBestTime = this.bestTime === null || finalTime < this.bestTime;
         
         if (isNewBestTime) {
-            BestScore.setBestScore('anagrams', finalTime);
+            BestScore.setBestScore('anagrams', finalTime, this.difficulty);
             this.bestTime = finalTime;
             this.updateBestScoreDisplay();
             window.confetti.start();
