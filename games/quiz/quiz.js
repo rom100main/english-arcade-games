@@ -4,6 +4,13 @@ class Quiz {
         this.bestScore = BestScore.getBestScore('quiz');
         this.currentWord = null;
         this.choices = [];
+        this.hasStarted = false;
+        
+        this.timer = new Timer({
+            duration: 10,
+            countdown: true,
+            onTimeout: () => this.handleGameOver()
+        });
         
         this.wordDisplay = document.getElementById('word-display');
         this.choicesContainer = document.getElementById('choices');
@@ -29,6 +36,9 @@ class Quiz {
     reset() {
         this.score = 0;
         this.scoreDisplay.textContent = '0';
+        this.hasStarted = false;
+        this.timer.reset();
+        document.getElementById("timer").textContent = this.timer.duration;
         this.generateQuestion();
     }
 
@@ -41,14 +51,16 @@ class Quiz {
     }
 
     updateScore(newscore) {
+        if (newscore%10==0) {
+            window.confetti.start();
+            setTimeout(() => window.confetti.stop(), 2000);
+        }
         this.score = newscore;
         this.scoreDisplay.textContent = this.score;
     }
 
     // Utils
     generateQuestion() {
-        console.log('Generating question...');
-
         const allWords = Random.getRandomWords(20, this.difficulty);
         
         const questionIndex = Math.floor(Math.random() * allWords.length);
@@ -87,13 +99,20 @@ class Quiz {
         const buttons = this.choicesContainer.querySelectorAll('.choice-button');
         buttons.forEach(button => button.disabled = true);
         
+        if (!this.hasStarted) {
+            this.hasStarted = true;
+            this.timer.start();
+        }
+        
         const isCorrect = this.choices[index] === this.currentWord;
         buttons[index].classList.add(isCorrect ? 'correct' : 'incorrect');
         
         if (isCorrect) {
-            this.updateScore(this.score + 1)
+            this.timer.reset();
+            this.updateScore(this.score + 1);
             setTimeout(() => {
                 this.generateQuestion();
+                this.timer.start();
             }, 1000);
             return;
         }
@@ -104,6 +123,7 @@ class Quiz {
     }
 
     handleGameOver() {
+        this.timer.stop();
         const isNewBestScore = this.score > this.bestScore;
         
         if (isNewBestScore) {
@@ -117,7 +137,7 @@ class Quiz {
             const popup = new Popup();
             const content = `
                 <h2>Game Over!</h2>
-                <p>Final Score: ${this.score}</p>
+                <p>Your score: ${this.score}</p>
                 <p class="best-score-text" style="color: ${isNewBestScore ? "var(--green)" : ""}">
                     ${isNewBestScore ? "🎉 New Best Score! 🎉" : `Best Score: ${this.bestScore || '-'}`}
                 </p>
