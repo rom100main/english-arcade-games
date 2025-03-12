@@ -32,22 +32,33 @@ class Quiz {
         this.generateQuestion();
     }
 
+    // Update
+    updateBestScoreDisplay() {
+        const bestScoreElement = document.getElementById('best-score');
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestScore || '-';
+        }
+    }
+
+    updateScore(newscore) {
+        this.score = newscore;
+        this.scoreDisplay.textContent = this.score;
+    }
+
+    // Utils
     generateQuestion() {
-        // Get all words for current difficulty
+        console.log('Generating question...');
+
         const allWords = Random.getRandomWords(20, this.difficulty);
         
-        // Select one random word as the question
         const questionIndex = Math.floor(Math.random() * allWords.length);
         this.currentWord = allWords[questionIndex];
         
-        // Create choices (1 correct + 3 random incorrect)
         this.choices = this.generateChoices(allWords, questionIndex);
         
-        // Display question
         const isEnglish = Math.random() < 0.5;
         this.wordDisplay.textContent = isEnglish ? this.currentWord.english : this.currentWord.french;
         
-        // Create choice buttons
         this.choicesContainer.innerHTML = '';
         this.choices.forEach((choice, index) => {
             const button = document.createElement('button');
@@ -60,8 +71,7 @@ class Quiz {
 
     generateChoices(words, correctIndex) {
         let choices = [words[correctIndex]];
-        
-        // Get 3 random incorrect answers
+
         while (choices.length < 4) {
             const randomIndex = Math.floor(Math.random() * words.length);
             if (randomIndex !== correctIndex && !choices.includes(words[randomIndex])) {
@@ -69,10 +79,10 @@ class Quiz {
             }
         }
         
-        // Shuffle choices
         return choices.sort(() => Math.random() - 0.5);
     }
 
+    // Handlers
     handleChoice(index) {
         const buttons = this.choicesContainer.querySelectorAll('.choice-button');
         buttons.forEach(button => button.disabled = true);
@@ -82,37 +92,54 @@ class Quiz {
         
         if (isCorrect) {
             this.updateScore(this.score + 1)
-            if (this.score > this.bestScore) {
-                this.bestScore = this.score;
-                BestScore.setBestScore('quiz', this.score);
-                this.updateBestScoreDisplay();
-            }
-        } else {
-            this.updateScore(0)
+            setTimeout(() => {
+                this.generateQuestion();
+            }, 1000);
+            return;
+        }
+
+        const correctIndex = this.choices.indexOf(this.currentWord);
+        buttons[correctIndex].classList.add('correct');
+        this.handleGameOver();
+    }
+
+    handleGameOver() {
+        const isNewBestScore = this.score > this.bestScore;
+        
+        if (isNewBestScore) {
+            BestScore.setBestScore('quiz', this.score);
+            this.bestScore = this.score;
             this.updateBestScoreDisplay();
-            const correctIndex = this.choices.indexOf(this.currentWord);
-            buttons[correctIndex].classList.add('correct');
+            window.confetti.start();
         }
         
-        setTimeout(() => {
-            this.generateQuestion();
+        setTimeout(() => { // delay popup to allow animation to play
+            const popup = new Popup();
+            const content = `
+                <h2>Game Over!</h2>
+                <p>Final Score: ${this.score}</p>
+                <p class="best-score-text" style="color: ${isNewBestScore ? "var(--green)" : ""}">
+                    ${isNewBestScore ? "🎉 New Best Score! 🎉" : `Best Score: ${this.bestScore || '-'}`}
+                </p>
+                <button class="button">Play Again</button>
+            `;
+
+            popup
+                .setContent(content)
+                .onHide(() => {
+                    window.confetti.hide();
+                    setTimeout(() => {
+                        this.reset();
+                    }, 300);
+                });
+                
+            const retryButton = popup.popup.querySelector(".button");
+            retryButton.addEventListener("click", () => {
+                popup.hide();
+            });
+            
+            popup.show();
         }, 1000);
-    }
-
-    updateScore(newscore) {
-        if (newscore%10==0) {
-            window.confetti.start();
-            setTimeout(() => window.confetti.stop(), 2000);
-        }
-        this.score = newscore;
-        this.scoreDisplay.textContent = this.score;
-    }
-
-    updateBestScoreDisplay() {
-        const bestScoreElement = document.getElementById('best-score');
-        if (bestScoreElement) {
-            bestScoreElement.textContent = this.bestScore || '-';
-        }
     }
 }
 

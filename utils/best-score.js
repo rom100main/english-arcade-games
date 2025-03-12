@@ -19,6 +19,8 @@ const BestScore = {
                 data = {};
             }
         }
+
+        if (!data[game]) data[game] = {};
         
         data[game][level] = score;
         const date = new Date();
