@@ -270,7 +270,7 @@ class Anagrams {
 
         const popup = new Popup();
         const content = `
-            <h2>Congratulations!</h2>
+            <h3>Congratulations!</h3>
             <p>You completed all anagrams in <span>${this.timer.formatTime(finalTime)}</span>!</p>
             <p class="best-score-text" style="color: ${isNewBestTime ? "var(--green)" : "" }">
                 ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.timer.formatTime(this.bestTime)}`}

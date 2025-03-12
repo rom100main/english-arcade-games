@@ -195,14 +195,14 @@ class Hangman {
 
         const popup = new Popup();
         const content = won ? `
-            <h2>Congratulations!</h2>
+            <h3>Congratulations!</h3>
             <p>You found the word in <span>${this.timer.formatTime(finalTime)}</span>!</p>
             <p class="best-score-text" style="color: ${isNewBestTime ? "var(--green)" : ""}">
                 ${isNewBestTime ? "🎉 New Best Time! 🎉" : `Best Time: ${this.timer.formatTime(this.bestTime)}`}
             </p>
             <button class="button">Play Again</button>
         ` : `
-            <h2>Game Over</h2>
+            <h3>Game Over</h3>
             <p>The word was: ${this.currentWord.english}</p>
             <button class="button">Try Again</button>
         `;

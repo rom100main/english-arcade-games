@@ -170,7 +170,7 @@ class WordPyramid {
         setTimeout(() => { // delay popup to allow animation to play
             const popup = new Popup();
             const content = `
-                <h2>Congratulations!</h2>
+                <h3>Congratulations!</h3>
                 <p>You created a pyramid with ${finalScore} words!</p>
                 <p class="best-score-text" style="color: ${isNewBestScore ? "var(--green)" : "" }">
                     ${isNewBestScore ? "🎉 New Best Score! 🎉" : `Best Score: ${this.bestScore === null ? "-" : this.bestScore} words`}

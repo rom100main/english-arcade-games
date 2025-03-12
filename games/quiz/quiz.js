@@ -136,7 +136,7 @@ class Quiz {
         setTimeout(() => { // delay popup to allow animation to play
             const popup = new Popup();
             const content = `
-                <h2>Game Over!</h2>
+                <h3>Game Over!</h3>
                 <p>Your score: ${this.score}</p>
                 <p class="best-score-text" style="color: ${isNewBestScore ? "var(--green)" : ""}">
                     ${isNewBestScore ? "🎉 New Best Score! 🎉" : `Best Score: ${this.bestScore || '-'}`}

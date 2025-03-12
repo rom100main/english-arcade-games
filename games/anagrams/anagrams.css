@@ -24,7 +24,7 @@
     align-items: center;
     justify-content: center;
     background: white;
-    font-size: 1.5em;
+    font-size: 1.5rem;
     font-weight: bold;
     user-select: none;
     -webkit-user-select: none;
@@ -58,7 +58,7 @@
 }
 
 #word-input {
-    font-size: 1.1em;
+    font-size: 1.1rem;
     padding: 10px 15px;
     border: none;
     border-radius: 5px;

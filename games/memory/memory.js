@@ -188,7 +188,7 @@ class MemoryGame {
         this.popup = new Popup();
 
         const content = `
-            <h2>Congratulations!</h2>
+            <h3>Congratulations!</h3>
             <p>You completed the game in <span id="final-attempts">${this.attempts}</span> attempts!</p>
             <p class="best-score-text" style="color: ${isNewBestScore ? "var(--green)" : "" }">
                 ${isNewBestScore ? '🎉 New Best Score! 🎉' : `Best Score: ${this.bestScore}`}
