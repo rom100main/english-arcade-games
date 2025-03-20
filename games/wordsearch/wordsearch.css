@@ -4,6 +4,7 @@
     align-items: center;
     padding: 15px;
     border-radius: 10px;
+    overflow-x: auto;
     background: var(--bg-secondary);
     box-shadow: var(--shadow);
 }
