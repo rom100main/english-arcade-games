@@ -7,7 +7,6 @@
     border-radius: 10px;
     background: var(--bg-secondary);
     box-shadow: var(--shadow);
-    margin: 20px 0;
 }
 
 .timer-container {
