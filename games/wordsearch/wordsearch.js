@@ -98,12 +98,15 @@ class WordSearch {
     }
 
     createWordList() {
-        this.words.forEach(({ french }) => {
-            const wordItem = document.createElement("div");
-            wordItem.className = "word-item";
-            wordItem.textContent = french;
-            wordItem.dataset.word = french;
-            this.wordList.appendChild(wordItem);
+        this.placedWords.forEach(({ word }) => {
+            const wordObj = this.words.find(w => w.english === word);
+            if (wordObj) {
+                const wordItem = document.createElement("div");
+                wordItem.className = "word-item";
+                wordItem.textContent = wordObj.french;
+                wordItem.dataset.word = wordObj.french;
+                this.wordList.appendChild(wordItem);
+            }
         });
     }
 
@@ -171,10 +174,9 @@ class WordSearch {
         ];
 
         const wordArray = word.replace(/\s/g, "").toUpperCase().split("");
-        let placed = false;
         let attempts = 0;
         
-        while (!placed && attempts < 100) {
+        while (attempts < 100) {
             const direction = directions[Math.floor(Math.random() * directions.length)];
             const startX = Math.floor(Math.random() * this.size);
             const startY = Math.floor(Math.random() * this.size);
@@ -193,7 +195,7 @@ class WordSearch {
                     const x = startX + i * direction[1];
                     this.board[y][x] = wordArray[i];
                 }
-                placed = true;
+                return;
             }
             attempts++;
         }
@@ -244,7 +246,7 @@ class WordSearch {
             document.querySelector(`.word-item[data-word="${word.french}"]`)
                 .classList.add("found");
 
-            if (this.foundWords.size === this.words.length) this.handleGameOver();
+            if (this.foundWords.size === this.placedWords.length) this.handleGameOver();
             
             return true;
         }
