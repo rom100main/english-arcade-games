@@ -23,7 +23,7 @@ class Hangman {
             this.updateBestScoreDisplay();
             this.reset();
         });
-        
+        this.setupKeyboardEvents();
         this.setupGame();
         this.updateBestScoreDisplay();
         this.timer.start();
@@ -34,7 +34,6 @@ class Hangman {
         this.createHintButtons();
         this.createWordDisplay();
         this.createKeyboard();
-        this.setupKeyboardEvents();
     }
 
     reset() {
